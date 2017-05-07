@@ -1,2 +1,2 @@
-run "pip install -r requirements.txt" \n
-run app.py
+run "pip install -r requirements.txt" 
+then run app.py
