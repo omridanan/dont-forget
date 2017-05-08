@@ -33,3 +33,7 @@ class DateField(Field):
 class OptionsField(Field):
     type = 'Options'
     possible_values = []
+
+class Task:
+    _id = None
+    name = None
