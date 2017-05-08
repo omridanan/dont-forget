@@ -17,3 +17,12 @@ class PersonResource(Resource):
             abort(404)
 
         return json_response(result)
+
+
+class PersonTasksResource(Resource):
+    def get(self, person_id):
+        result = db.persontasks.find({'person_id': ObjectId(person_id)})
+        if not result:
+            abort(404)
+
+        return json_response(result)

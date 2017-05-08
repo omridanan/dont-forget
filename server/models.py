@@ -34,6 +34,10 @@ class OptionsField(Field):
     type = 'Options'
     possible_values = []
 
-class Task:
+class AllTask:
     _id = None
     name = None
+
+class PersonTasks:
+    person_id = None
+    task_id = None
