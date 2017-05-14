@@ -21,7 +21,7 @@ class PersonResource(Resource):
 
 class PersonTasksResource(Resource):
     def get(self, person_id):
-        result = db.persontasks.find({'person_id': ObjectId(person_id)})
+        result = list(db.persontasks.find({'person_id': ObjectId(person_id)}))
         if not result:
             abort(404)
 
