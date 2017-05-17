@@ -15,4 +15,4 @@ api.add_resource(TaskListResource, '/tasks')
 api.add_resource(TaskResource, '/tasks/<task_id>')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=8080)

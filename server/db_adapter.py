@@ -14,7 +14,8 @@ def db_connect_and_validate(uri):
 
 try:
 	# use mlab instance as default
-	uri = 'mongodb://admin:12345678@ds133261.mlab.com:33261/dont-forget'	
+	#uri = 'mongodb://admin:12345678@ds133261.mlab.com:33261/dont-forget'
+	uri = 'mongodb://admin:admin@ds143071.mlab.com:43071/dont-forget'	
 	client = db_connect_and_validate(uri)
 except:
 	# if failure, use local instance
