@@ -1,34 +1,26 @@
 from bson import ObjectId
 from flask_restful import Resource, abort
-
 from db_adapter import db
 from json_utils import json_response
+from webargs import fields
+from webargs.flaskparser import use_args, parser, use_kwargs
+import logging
 
-# Task {
-#   id: string;
-#   title: string;
-#   note: string;
-#   label: string;
-#   reminder: {
-#     date: string,
-#     repeat: string
-#   };
-#   color: string;
-#   time: string;
-#   restore: string;
-# }
+log = logging.getLogger('werkzeug')
 
-def get_task_data():
-    parser = reqparse.RequestParser()
-        
-    parser.add_argument('title', type=str, required=True, location='json')
-    parser.add_argument('note', type=str, required=False, location='json')
-    parser.add_argument('label', type=list, required=True, location='json')
-    parser.add_argument('label', type=list, required=True, location='json')
 
-    person_data = parser.parse_args(strict=True)
-
-    return person_data
+task_args = {
+    "title" : fields.Str(),
+    "note"  : fields.Str(),
+    "label" : fields.List(fields.Str()),
+    "reminder" : fields.Nested({
+        'date' : fields.Int(),
+        'repeat' : fields.Str(), # 1h, 2m, 5d 
+    }),
+    "color" : fields.Str(), # RGB
+    "time" : fields.Int(), # created time
+    "restore" : fields.Str(), # "note"
+}
 
 class TaskListResource(Resource):
 	# GET all
@@ -36,9 +28,10 @@ class TaskListResource(Resource):
         return json_response(list(db.tasks.find()))
 
     # POST
-    def post(self):
-        person_data = get_person_data()
-        result = db.persons.insert_one(person_data)
+    @use_args(task_args)
+    def post(self, args):
+        result = db.tasks.insert_one(args)
+        log.error(args)
         
         return json_response({"ObjectId" : result.inserted_id})
 
@@ -53,5 +46,11 @@ class TaskResource(Resource):
         return json_response(result)
 
     # PUT 
-    def put(self, task_id):
-    	pass
+    @use_args(task_args)
+    def put(self, task_args, task_id):
+    	result = db.tasks.update_one(
+            {'_id': ObjectId(task_id)}, 
+            { '$set' : args }
+        )
+        
+        return json_response(result.raw_result)
