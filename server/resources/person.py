@@ -1,23 +1,17 @@
 from bson import ObjectId
 from flask_restful import Resource, abort, reqparse
-
 from db_adapter import db
 from json_utils import json_response
+from webargs import fields
+from webargs.flaskparser import use_args, parser, use_kwargs
+from flask import request
 
-def get_person_data():
-    parser = reqparse.RequestParser()
-        
-    parser.add_argument('name', type=str, required=True, location='json')
-    parser.add_argument('birthdate', type=int, required=True, location='json')
 
-    args = parser.parse_args(strict=True)
-
-    person_data = {
-        "name" : args["name"],
-        "birthdate" : args["birthdate"]
-    }
-
-    return person_data
+person_args = {
+    'name' : fields.Str(required=True),
+    'birthdate' : fields.Int(required=True),
+    # 'person_id' : fields.UUID(required=True)
+}
 
 class PersonListResource(Resource):
     # GET - list *all* persons
@@ -25,12 +19,10 @@ class PersonListResource(Resource):
         return json_response(list(db.persons.find()))
 
     # POST - create new person
-    def post(self):
-        person_data = get_person_data()
-        result = db.persons.insert_one(person_data)
-        
+    @use_args(person_args)
+    def post(self, args):
+        result = db.persons.insert_one(args)
         return json_response({"ObjectId" : result.inserted_id})
-
 
 class PersonResource(Resource):
     # GET - get specific person by id
@@ -41,11 +33,10 @@ class PersonResource(Resource):
 
         return json_response(result)
 
-    # UPDATE - update fields of an already exists person 
-    def put(self, person_id):
-        person_data = get_person_data()
-        result = db.persons.update_one({'_id': ObjectId(person_id)}, { '$set' : person_data })
-
+    # PUT - update person
+    @use_args(person_args)
+    def put(self, args, person_id):
+        result = db.persons.update_one({'_id': ObjectId(person_id)}, { '$set' : args })
         return json_response(result.raw_result)
 
 class PersonTasksResource(Resource):
