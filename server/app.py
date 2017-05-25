@@ -4,9 +4,11 @@ from flask_restful import Api
 
 from resources.person import PersonResource, PersonListResource, PersonTasksResource
 from resources.task import TaskResource, TaskListResource
+from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
 api.add_resource(PersonListResource, '/persons')
 api.add_resource(PersonResource, '/persons/<person_id>')

@@ -5,25 +5,35 @@ import { HttpModule } from '@angular/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { LoginComponent } from './login/login.component';
-import { RegisterComponent } from './register/register.component';
-import { TasksComponent } from './tasks/tasks.component';
-import {FacebookService} from "./facebook.service";
+import {TasksComponent} from "./components/tasks.component";
+import {AppConfig} from "./app.config";
+import {TasksService} from "./services/tasks.service";
+import {AppContextService} from "./services/app-context.service";
+import {FacebookModule} from "ngx-facebook";
+import {LoginComponent} from "./components/login.component";
+import {RegisterComponent} from "./components/register.component";
+import {UsersService} from "./services/users.service";
 
 @NgModule({
   declarations: [
     AppComponent,
+    TasksComponent,
     LoginComponent,
-    RegisterComponent,
-    TasksComponent
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FacebookModule.forRoot()
   ],
-  providers: [FacebookService],
+  providers: [
+    AppConfig,
+    AppContextService,
+    TasksService,
+    UsersService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

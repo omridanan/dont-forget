@@ -8,10 +8,7 @@ import { SimpleNotificationsModule,
 import { AppRoutingModule }     from './app.routing';
 import { AppComponent }         from './app.component';
 import { Spinner,
-         BinComponent,
-         HomeComponent,
-         AboutComponent,
-         ArchiveComponent }     from './components';
+         HomeComponent}     from './components';
 
 import { Dragula }              from './directives/dragula';
 import { FluidHeightDirective } from './directives/fluid-height';
@@ -20,12 +17,14 @@ import { NotesTable,
          DragulaService,
          NotesTableService }    from './services';
 import {LoginComponent} from "./components/login/login.component";
+import {HttpModule} from "@angular/http";
 
 @NgModule({
   imports: [
       FormsModule,
       BrowserModule,
       AppRoutingModule,
+      HttpModule,
       NguiDatetimePickerModule,
       PushNotificationsModule,
       SimpleNotificationsModule.forRoot()
@@ -34,10 +33,10 @@ import {LoginComponent} from "./components/login/login.component";
     Spinner,
     Dragula,
     AppComponent,
-    BinComponent,
+    /*BinComponent,*/
     HomeComponent,
-    AboutComponent,
-    ArchiveComponent,
+    /*AboutComponent,*/
+    /*ArchiveComponent,*/
     FluidHeightDirective,
     LoginComponent
   ],

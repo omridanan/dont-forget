@@ -4,8 +4,11 @@ import * as PouchDB         from 'pouchdb';
 
 import { NotesTable }       from './notes_table';
 import { PushNotificationsService } from 'angular2-notifications';
+import {Http} from "@angular/http";
 
 export var NOTES_TABLES: NotesTable[] = [];
+
+const apiUrl = 'http://localhost:8080/tasks';
 
 let localDB = {
   notes             : new PouchDB('notes_table'),
@@ -25,19 +28,17 @@ export class NotesTableService {
   };
   audio: any;
 
-  constructor(private _pushNotifications: PushNotificationsService) {
+  constructor(private _pushNotifications: PushNotificationsService, private _http: Http) {
     this._pushNotifications.requestPermission();
     this.audio = new Audio('sound/notification.mp3');
   }
 
-  getNotes(schema: string) {
-    var docs = localDB[schema].allDocs({
-      include_docs: true
-    });
-    return docs;
+  getNotes(schema: string): Promise<NotesTable[]> {
+    return this._http.get(apiUrl).map(res => res.json()).toPromise();
   }
 
   saveNote(schema: string, note: any) {
+      return this._http.put(apiUrl)
     return localDB[schema].put(note);
   }
 
@@ -63,10 +64,11 @@ export class NotesTableService {
   updateReminderTable(schema: string) {
     this.getNotes(schema).then(
       alldoc => {
-        let rows = alldoc.rows;
+          console.log(alldoc);
+        let rows = alldoc;
         this.reminderTable[schema] = [];
         rows.forEach(row => {
-          if (row.doc.reminder) {
+          if (row.reminder) {
             this.reminderTable[schema].push(row);
           }
         });

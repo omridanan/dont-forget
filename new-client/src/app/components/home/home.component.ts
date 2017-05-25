@@ -92,7 +92,7 @@ export class HomeComponent implements OnInit {
   refreshNotesTables() {
     this._notesService.getNotes('notes').then(
       alldoc => {
-        this.notes_table = alldoc.rows;
+        this.notes_table = alldoc;
         let testNotes = [];
         testNotes = this.notes_table;
         if (localStorage.getItem('order')) {
@@ -101,7 +101,7 @@ export class HomeComponent implements OnInit {
         this.notes = [];
         this.order.forEach(el => {
           testNotes.forEach(row => {
-            if (String(row.doc._id) === String(el)) {
+            if (String(row._id) === String(el)) {
               this.notes.push(row);
             }
           });

@@ -34,7 +34,7 @@
 >  
 >  `npm start`
 >  
->  For developement `npm run dev` (application running at `localhost:8080`)
+>  For developement `npm run dev` (application running at `localhost:8081`)
 
 
 #### That's it ...
