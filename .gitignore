@@ -1,1 +1,7 @@
 .vscode/*
+.idea/*
+.idea/workspace.xml
+.gitignore
+dont-forget.iml
+vcs.xml
+.idea/workspace.xml
