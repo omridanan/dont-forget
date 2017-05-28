@@ -16,5 +16,10 @@ api.add_resource(PersonTasksResource, '/persons/<person_id>/tasks')
 api.add_resource(TaskListResource, '/tasks')
 api.add_resource(TaskResource, '/tasks/<task_id>')
 
+
+@app.route("/")
+def home():
+    return "Don't Forget!"
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8080)
