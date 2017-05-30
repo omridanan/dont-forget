@@ -1,2 +1,8 @@
 .vscode/*
 test.txt
+.idea/*
+.idea/workspace.xml
+dont-forget.iml
+vcs.xml
+.idea/workspace.xml
+.idea/*
