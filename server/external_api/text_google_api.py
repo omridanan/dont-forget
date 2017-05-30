@@ -13,10 +13,11 @@ def test(argv):
 	        sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-         		print 'test.py -t <task>'
+         	print 'test.py -t <task>'
 			sys.exit(2)
-        	elif opt in ("-t"):
-         		text = arg
+    	elif opt in ("-t"):
+     		text = arg
+         		
 	# The text to analyze
 	document = language_client.document_from_text(text)
 
@@ -33,11 +34,12 @@ def test(argv):
 def get_tags_for_text(text):
 	document = language_client.document_from_text(text)
 
-        # Detects the sentiment of the text
-        entities = document.analyze_entities().entities
+    # Detects the sentiment of the text
+    entities = document.analyze_entities().entities
 	
 	return [str(entity.name) for entity in entities]
 
 if __name__ == "__main__":
-   test(sys.argv[1:])
-#   print get_tags_for_text("buy flowers for shabbat")
+  test(sys.argv[1:])
+  #print get_tags_for_text("go play football tomorow")
+  #print get_tags_for_text("play football with friends")
