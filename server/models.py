@@ -41,3 +41,19 @@ class AllTask:
 class PersonTasks:
     person_id = None
     task_id = None
+
+class RelatedTasksGroupsAggregationPerProfile:
+    profile_id = None
+    tasks_group_id = None
+    count = None
+
+class RelatedTasksGroups(Document):
+    task_id = None
+
+class RelatedTasksGroupsAggregationPerProfile:
+    profile_id = None
+    tasks_group_id = None
+    count = None
+
+class RelatedTasksGroups(Document):
+    task_id = None
