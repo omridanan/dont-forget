@@ -6,17 +6,20 @@ import sys, getopt
 language_client = language.Client()
 
 def test(argv):
+	text = ""
+	
 	try:
 		opts, args = getopt.getopt(argv,"ht:")
 	except:
 		print 'test.py -t <task>'
-	        sys.exit(2)
+		sys.exit(2)
+	  
 	for opt, arg in opts:
 		if opt == '-h':
-         	print 'test.py -t <task>'
+			print 'test.py -t <task>'
 			sys.exit(2)
-    	elif opt in ("-t"):
-     		text = arg
+		elif opt in ("-t"):
+			text = arg
          		
 	# The text to analyze
 	document = language_client.document_from_text(text)
@@ -33,9 +36,9 @@ def test(argv):
 
 def get_tags_for_text(text):
 	document = language_client.document_from_text(text)
-
-    # Detects the sentiment of the text
-    entities = document.analyze_entities().entities
+	
+	# Detects the sentiment of the text
+	entities = document.analyze_entities().entities
 	
 	return [str(entity.name) for entity in entities]
 
