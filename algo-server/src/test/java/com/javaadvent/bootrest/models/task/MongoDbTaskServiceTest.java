@@ -1,4 +1,4 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,93 +7,87 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static com.javaadvent.bootrest.todo.TodoAssert.assertThatTodo;
-import static com.javaadvent.bootrest.todo.TodoDTOAssert.assertThatTodoDTO;
+import static com.javaadvent.bootrest.models.task.TaskAssert.assertThatTask;
+import static com.javaadvent.bootrest.models.task.TaskDTOAssert.assertThatTaskDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-/**
- * @author Petri Kainulainen
- */
+
 @RunWith(MockitoJUnitRunner.class)
-public class MongoDbTodoServiceTest {
+public class MongoDbTaskServiceTest {
 
     private static final String DESCRIPTION = "description";
     private static final String ID = "id";
     private static final String TITLE = "title";
 
     @Mock
-    private TodoRepository repository;
+    private TaskRepository repository;
 
-    private MongoDBTodoService service;
+    private MongoDBTaskServiceImp service;
 
     @Before
     public void setUp() {
-        this.service = new MongoDBTodoService(repository);
+        this.service = new MongoDBTaskServiceImp(repository);
     }
 
     @Test
-    public void create_ShouldSaveNewTodoEntry() {
-        TodoDTO newTodo = new TodoDTOBuilder()
+    public void create_ShouldSaveNewTaskEntry() {
+        TaskDTO newTask = new TaskDTOBuilder()
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .build();
 
-        when(repository.save(isA(Todo.class))).thenAnswer(invocation -> (Todo) invocation.getArguments()[0]);
+        when(repository.save(isA(Task.class))).thenAnswer(invocation -> (Task) invocation.getArguments()[0]);
 
-        service.create(newTodo);
+        service.create(newTask);
 
-        ArgumentCaptor<Todo> savedTodoArgument = ArgumentCaptor.forClass(Todo.class);
+        ArgumentCaptor<Task> savedTaskArgument = ArgumentCaptor.forClass(Task.class);
 
-        verify(repository, times(1)).save(savedTodoArgument.capture());
+        verify(repository, times(1)).save(savedTaskArgument.capture());
         verifyNoMoreInteractions(repository);
 
-        Todo savedTodo = savedTodoArgument.getValue();
-        assertThatTodo(savedTodo)
+        Task savedTask = savedTaskArgument.getValue();
+        assertThatTask(savedTask)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
     @Test
-    public void create_ShouldReturnTheInformationOfCreatedTodoEntry() {
-        TodoDTO newTodo = new TodoDTOBuilder()
+    public void create_ShouldReturnTheInformationOfCreatedTaskEntry() {
+        TaskDTO newTask = new TaskDTOBuilder()
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .build();
 
-        when(repository.save(isA(Todo.class))).thenAnswer(invocation -> {
-            Todo persisted = (Todo) invocation.getArguments()[0];
+        when(repository.save(isA(Task.class))).thenAnswer(invocation -> {
+            Task persisted = (Task) invocation.getArguments()[0];
             ReflectionTestUtils.setField(persisted, "id", ID);
             return persisted;
         });
 
-        TodoDTO returned = service.create(newTodo);
+        TaskDTO returned = service.create(newTask);
 
-        assertThatTodoDTO(returned)
+        assertThatTaskDTO(returned)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
-    @Test(expected = TodoNotFoundException.class)
-    public void delete_TodoEntryNotFound_ShouldThrowException() {
+    @Test(expected = TaskNotFoundException.class)
+    public void delete_TaskEntryNotFound_ShouldThrowException() {
         when(repository.findOne(ID)).thenReturn(Optional.empty());
 
         service.findById(ID);
     }
 
     @Test
-    public void delete_TodoEntryFound_ShouldDeleteTheFoundTodoEntry() {
-        Todo deleted = new TodoBuilder()
+    public void delete_TaskEntryFound_ShouldDeleteTheFoundTaskEntry() {
+        Task deleted = new TaskBuilder()
                 .id(ID)
                 .build();
 
@@ -105,8 +99,8 @@ public class MongoDbTodoServiceTest {
     }
 
     @Test
-    public void delete_TodoEntryFound_ShouldReturnTheDeletedTodoEntry() {
-        Todo deleted = new TodoBuilder()
+    public void delete_TaskEntryFound_ShouldReturnTheDeletedTaskEntry() {
+        Task deleted = new TaskBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -114,17 +108,17 @@ public class MongoDbTodoServiceTest {
 
         when(repository.findOne(ID)).thenReturn(Optional.of(deleted));
 
-        TodoDTO returned = service.delete(ID);
+        TaskDTO returned = service.delete(ID);
 
-        assertThatTodoDTO(returned)
+        assertThatTaskDTO(returned)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
     @Test
-    public void findAll_OneTodoEntryFound_ShouldReturnTheInformationOfFoundTodoEntry() {
-        Todo expected = new TodoBuilder()
+    public void findAll_OneTaskEntryFound_ShouldReturnTheInformationOfFoundTaskEntry() {
+        Task expected = new TaskBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -132,26 +126,26 @@ public class MongoDbTodoServiceTest {
 
         when(repository.findAll()).thenReturn(Arrays.asList(expected));
 
-        List<TodoDTO> todoEntries = service.findAll();
-        assertThat(todoEntries).hasSize(1);
+        List<TaskDTO> taskEntries = service.findAll();
+        assertThat(taskEntries).hasSize(1);
 
-        TodoDTO actual = todoEntries.iterator().next();
-        assertThatTodoDTO(actual)
+        TaskDTO actual = taskEntries.iterator().next();
+        assertThatTaskDTO(actual)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
-    @Test(expected = TodoNotFoundException.class)
-    public void findById_TodoEntryNotFound_ShouldThrowException() {
+    @Test(expected = TaskNotFoundException.class)
+    public void findById_TaskEntryNotFound_ShouldThrowException() {
         when(repository.findOne(ID)).thenReturn(Optional.empty());
 
         service.findById(ID);
     }
 
     @Test
-    public void findById_TodoEntryFound_ShouldReturnTheInformationOfFoundTodoEntry() {
-        Todo found = new TodoBuilder()
+    public void findById_TaskEntryFound_ShouldReturnTheInformationOfFoundTaskEntry() {
+        Task found = new TaskBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -159,19 +153,19 @@ public class MongoDbTodoServiceTest {
 
         when(repository.findOne(ID)).thenReturn(Optional.of(found));
 
-        TodoDTO returned = service.findById(ID);
+        TaskDTO returned = service.findById(ID);
 
-        assertThatTodoDTO(returned)
+        assertThatTaskDTO(returned)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
-    @Test(expected = TodoNotFoundException.class)
-    public void update_UpdatedTodoEntryNotFound_ShouldThrowException() {
+    @Test(expected = TaskNotFoundException.class)
+    public void update_UpdatedTaskEntryNotFound_ShouldThrowException() {
         when(repository.findOne(ID)).thenReturn(Optional.empty());
 
-        TodoDTO updated = new TodoDTOBuilder()
+        TaskDTO updated = new TaskDTOBuilder()
                 .id(ID)
                 .build();
 
@@ -179,15 +173,15 @@ public class MongoDbTodoServiceTest {
     }
 
     @Test
-    public void update_UpdatedTodoEntryFound_ShouldSaveUpdatedTodoEntry() {
-        Todo existing = new TodoBuilder()
+    public void update_UpdatedTaskEntryFound_ShouldSaveUpdatedTaskEntry() {
+        Task existing = new TaskBuilder()
                 .id(ID)
                 .build();
 
         when(repository.findOne(ID)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
 
-        TodoDTO updated = new TodoDTOBuilder()
+        TaskDTO updated = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -196,29 +190,29 @@ public class MongoDbTodoServiceTest {
         service.update(updated);
 
         verify(repository, times(1)).save(existing);
-        assertThatTodo(existing)
+        assertThatTask(existing)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
     }
 
     @Test
-    public void update_UpdatedTodoEntryFound_ShouldReturnTheInformationOfUpdatedTodoEntry() {
-        Todo existing = new TodoBuilder()
+    public void update_UpdatedTaskEntryFound_ShouldReturnTheInformationOfUpdatedTaskEntry() {
+        Task existing = new TaskBuilder()
                 .id(ID)
                 .build();
 
         when(repository.findOne(ID)).thenReturn(Optional.of(existing));
         when(repository.save(existing)).thenReturn(existing);
 
-        TodoDTO updated = new TodoDTOBuilder()
+        TaskDTO updated = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
                 .build();
 
-        TodoDTO returned = service.update(updated);
-        assertThatTodoDTO(returned)
+        TaskDTO returned = service.update(updated);
+        assertThatTaskDTO(returned)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);

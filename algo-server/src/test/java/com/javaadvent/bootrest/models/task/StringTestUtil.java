@@ -1,8 +1,5 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
-/**
- * @author Petri Kainulainen
- */
 public final class StringTestUtil {
 
     private static final String CHARACTER = "A";

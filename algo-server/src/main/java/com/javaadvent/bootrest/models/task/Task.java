@@ -1,15 +1,15 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import static com.javaadvent.bootrest.util.PreCondition.isTrue;
-import static com.javaadvent.bootrest.util.PreCondition.notEmpty;
-import static com.javaadvent.bootrest.util.PreCondition.notNull;
+import static com.javaadvent.bootrest.util.PreCondition.*;
 
 /**
- * @author Petri Kainulainen
+ * represent the task objet in mongo tasks collection
  */
-final class Todo {
+@Document(collection = "tasks")
+public final class Task {
 
     static final int MAX_LENGTH_DESCRIPTION = 500;
     static final int MAX_LENGTH_TITLE = 100;
@@ -21,9 +21,9 @@ final class Todo {
 
     private String title;
 
-    public Todo() {}
+    public Task() {}
 
-    private Todo(Builder builder) {
+    private Task(Builder builder) {
         this.description = builder.description;
         this.title = builder.title;
     }
@@ -54,7 +54,7 @@ final class Todo {
     @Override
     public String toString() {
         return String.format(
-                "Todo[id=%s, description=%s, title=%s]",
+                "Task[id=%s, description=%s, title=%s]",
                 this.id,
                 this.description,
                 this.title
@@ -83,8 +83,8 @@ final class Todo {
             return this;
         }
 
-        Todo build() {
-            Todo build = new Todo(this);
+        Task build() {
+            Task build = new Task(this);
 
             build.checkTitleAndDescription(build.getTitle(), build.getDescription());
 

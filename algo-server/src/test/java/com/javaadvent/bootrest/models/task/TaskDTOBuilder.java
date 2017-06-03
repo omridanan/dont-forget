@@ -1,35 +1,33 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
-/**
- * @author Petri Kainulainen
- */
-class TodoDTOBuilder {
+
+class TaskDTOBuilder {
 
     private String description;
     private String id;
     private String title;
 
-    TodoDTOBuilder() {
+    TaskDTOBuilder() {
 
     }
 
-    TodoDTOBuilder description(String description) {
+    TaskDTOBuilder description(String description) {
         this.description = description;
         return this;
     }
 
-    TodoDTOBuilder id(String id) {
+    TaskDTOBuilder id(String id) {
         this.id = id;
         return this;
     }
 
-    TodoDTOBuilder title(String title) {
+    TaskDTOBuilder title(String title) {
         this.title = title;
         return this;
     }
 
-    TodoDTO build() {
-        TodoDTO dto = new TodoDTO();
+    TaskDTO build() {
+        TaskDTO dto = new TaskDTO();
 
         dto.setDescription(description);
         dto.setId(id);

@@ -1,4 +1,4 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
 import com.javaadvent.bootrest.error.RestErrorHandler;
 import org.junit.Before;
@@ -20,15 +20,11 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import static com.javaadvent.bootrest.todo.TodoDTOAssert.assertThatTodoDTO;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -37,11 +33,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * @author Petri Kainulainen
- */
+
 @RunWith(MockitoJUnitRunner.class)
-public class TodoControllerTest {
+public class TaskControllerTest {
 
     private static final MediaType APPLICATION_JSON_UTF8 = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
@@ -56,13 +50,13 @@ public class TodoControllerTest {
     private static final int MAX_LENGTH_TITLE = 100;
 
     @Mock
-    private TodoService service;
+    private TaskService service;
 
     private MockMvc mockMvc;
 
     @Before
     public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new TodoController(service))
+        mockMvc = MockMvcBuilders.standaloneSetup(new TaskController(service))
                 .setHandlerExceptionResolvers(withExceptionControllerAdvice())
                 .build();
     }
@@ -96,61 +90,61 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void create_TodoEntryWithOnlyTitle_ShouldCreateNewTodoEntryWithoutDescription() throws Exception {
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+    public void create_TaskEntryWithOnlyTitle_ShouldCreateNewTaskEntryWithoutDescription() throws Exception {
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(TITLE)
                 .build();
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         );
 
-        ArgumentCaptor<TodoDTO> createdArgument = ArgumentCaptor.forClass(TodoDTO.class);
+        ArgumentCaptor<TaskDTO> createdArgument = ArgumentCaptor.forClass(TaskDTO.class);
         verify(service, times(1)).create(createdArgument.capture());
         verifyNoMoreInteractions(service);
 
-        TodoDTO created = createdArgument.getValue();
-        assertThatTodoDTO(created)
+        TaskDTO created = createdArgument.getValue();
+        TaskDTOAssert.assertThatTaskDTO(created)
                 .hasNoId()
                 .hasTitle(TITLE)
                 .hasNoDescription();
     }
 
     @Test
-    public void create_TodoEntryWithOnlyTitle_ShouldReturnResponseStatusCreated() throws Exception {
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+    public void create_TaskEntryWithOnlyTitle_ShouldReturnResponseStatusCreated() throws Exception {
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(TITLE)
                 .build();
 
-        when(service.create(isA(TodoDTO.class))).then(invocationOnMock -> {
-            TodoDTO saved = (TodoDTO) invocationOnMock.getArguments()[0];
+        when(service.create(isA(TaskDTO.class))).then(invocationOnMock -> {
+            TaskDTO saved = (TaskDTO) invocationOnMock.getArguments()[0];
             saved.setId(ID);
             return saved;
         });
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         )
                 .andExpect(status().isCreated());
     }
 
     @Test
-    public void create_TodoEntryWithOnlyTitle_ShouldReturnTheInformationOfCreatedTodoEntryAsJSon() throws Exception {
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+    public void create_TaskEntryWithOnlyTitle_ShouldReturnTheInformationOfCreatedTaskEntryAsJSon() throws Exception {
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(TITLE)
                 .build();
 
-        when(service.create(isA(TodoDTO.class))).then(invocationOnMock -> {
-            TodoDTO saved = (TodoDTO) invocationOnMock.getArguments()[0];
+        when(service.create(isA(TaskDTO.class))).then(invocationOnMock -> {
+            TaskDTO saved = (TaskDTO) invocationOnMock.getArguments()[0];
             saved.setId(ID);
             return saved;
         });
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         )
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))
@@ -159,73 +153,73 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void create_TodoEntryWithMaxLengthTitleAndDescription_ShouldCreateNewTodoEntryWithCorrectInformation() throws Exception {
+    public void create_TaskEntryWithMaxLengthTitleAndDescription_ShouldCreateNewTaskEntryWithCorrectInformation() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         );
 
-        ArgumentCaptor<TodoDTO> createdArgument = ArgumentCaptor.forClass(TodoDTO.class);
+        ArgumentCaptor<TaskDTO> createdArgument = ArgumentCaptor.forClass(TaskDTO.class);
         verify(service, times(1)).create(createdArgument.capture());
         verifyNoMoreInteractions(service);
 
-        TodoDTO created = createdArgument.getValue();
-        assertThatTodoDTO(created)
+        TaskDTO created = createdArgument.getValue();
+        TaskDTOAssert.assertThatTaskDTO(created)
                 .hasNoId()
                 .hasTitle(maxLengthTitle)
                 .hasDescription(maxLengthDescription);
     }
 
     @Test
-    public void create_TodoEntryWithMaxLengthTitleAndDescription_ShouldReturnResponseStatusCreated() throws Exception {
+    public void create_TaskEntryWithMaxLengthTitleAndDescription_ShouldReturnResponseStatusCreated() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        when(service.create(isA(TodoDTO.class))).then(invocationOnMock -> {
-            TodoDTO saved = (TodoDTO) invocationOnMock.getArguments()[0];
+        when(service.create(isA(TaskDTO.class))).then(invocationOnMock -> {
+            TaskDTO saved = (TaskDTO) invocationOnMock.getArguments()[0];
             saved.setId(ID);
             return saved;
         });
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         )
                 .andExpect(status().isCreated());
     }
 
     @Test
-    public void create_TodoEntryWithMaxLengthTitleAndDescription_ShouldReturnTheInformationOfCreatedTodoEntryAsJson() throws Exception {
+    public void create_TaskEntryWithMaxLengthTitleAndDescription_ShouldReturnTheInformationOfCreatedTaskEntryAsJson() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO newTodoEntry = new TodoDTOBuilder()
+        TaskDTO newTaskEntry = new TaskDTOBuilder()
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        when(service.create(isA(TodoDTO.class))).then(invocationOnMock -> {
-            TodoDTO saved = (TodoDTO) invocationOnMock.getArguments()[0];
+        when(service.create(isA(TaskDTO.class))).then(invocationOnMock -> {
+            TaskDTO saved = (TaskDTO) invocationOnMock.getArguments()[0];
             saved.setId(ID);
             return saved;
         });
 
-        mockMvc.perform(post("/api/todo")
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(newTodoEntry))
+        mockMvc.perform(post("/api/task")
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(newTaskEntry))
         )
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))
@@ -234,28 +228,28 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void delete_TodoEntryNotFound_ShouldReturnResponseStatusNotFound() throws Exception {
-        when(service.delete(ID)).thenThrow(new TodoNotFoundException(ID));
+    public void delete_TaskEntryNotFound_ShouldReturnResponseStatusNotFound() throws Exception {
+        when(service.delete(ID)).thenThrow(new TaskNotFoundException(ID));
 
-        mockMvc.perform(delete("/api/todo/{id}", ID))
+        mockMvc.perform(delete("/api/task/{id}", ID))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void delete_TodoEntryFound_ShouldReturnResponseStatusOk() throws Exception {
-        TodoDTO deleted = new TodoDTOBuilder()
+    public void delete_TaskEntryFound_ShouldReturnResponseStatusOk() throws Exception {
+        TaskDTO deleted = new TaskDTOBuilder()
                 .id(ID)
                 .build();
 
         when(service.delete(ID)).thenReturn(deleted);
 
-        mockMvc.perform(delete("/api/todo/{id}", ID))
+        mockMvc.perform(delete("/api/task/{id}", ID))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void delete_TodoEntryFound_ShouldTheInformationOfDeletedTodoEntryAsJson() throws Exception {
-        TodoDTO deleted = new TodoDTOBuilder()
+    public void delete_TaskEntryFound_ShouldTheInformationOfDeletedTaskEntryAsJson() throws Exception {
+        TaskDTO deleted = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -263,7 +257,7 @@ public class TodoControllerTest {
 
         when(service.delete(ID)).thenReturn(deleted);
 
-        mockMvc.perform(delete("/api/todo/{id}", ID))
+        mockMvc.perform(delete("/api/task/{id}", ID))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))
                 .andExpect(jsonPath("$.title", is(TITLE)))
@@ -272,13 +266,13 @@ public class TodoControllerTest {
 
     @Test
     public void findAll_ShouldReturnResponseStatusOk() throws Exception {
-        mockMvc.perform(get("/api/todo"))
+        mockMvc.perform(get("/api/task"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void findAll_OneTodoEntryFound_ShouldReturnListThatContainsOneTodoEntryAsJson() throws Exception {
-        TodoDTO found = new TodoDTOBuilder()
+    public void findAll_OneTaskEntryFound_ShouldReturnListThatContainsOneTaskEntryAsJson() throws Exception {
+        TaskDTO found = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -286,7 +280,7 @@ public class TodoControllerTest {
 
         when(service.findAll()).thenReturn(Arrays.asList(found));
 
-        mockMvc.perform(get("/api/todo"))
+        mockMvc.perform(get("/api/task"))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(ID)))
@@ -295,18 +289,18 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void findById_TodoEntryFound_ShouldReturnResponseStatusOk() throws Exception {
-        TodoDTO found = new TodoDTOBuilder().build();
+    public void findById_TaskEntryFound_ShouldReturnResponseStatusOk() throws Exception {
+        TaskDTO found = new TaskDTOBuilder().build();
 
         when(service.findById(ID)).thenReturn(found);
 
-        mockMvc.perform(get("/api/todo/{id}", ID))
+        mockMvc.perform(get("/api/task/{id}", ID))
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void findById_TodoEntryFound_ShouldTheInformationOfFoundTodoEntryAsJson() throws Exception {
-        TodoDTO found = new TodoDTOBuilder()
+    public void findById_TaskEntryFound_ShouldTheInformationOfFoundTaskEntryAsJson() throws Exception {
+        TaskDTO found = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .description(DESCRIPTION)
@@ -314,7 +308,7 @@ public class TodoControllerTest {
 
         when(service.findById(ID)).thenReturn(found);
 
-        mockMvc.perform(get("/api/todo/{id}", ID))
+        mockMvc.perform(get("/api/task/{id}", ID))
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))
                 .andExpect(jsonPath("$.title", is(TITLE)))
@@ -322,64 +316,64 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void findById_TodoEntryNotFound_ShouldReturnResponseStatusNotFound() throws Exception {
-        when(service.findById(ID)).thenThrow(new TodoNotFoundException(ID));
+    public void findById_TaskEntryNotFound_ShouldReturnResponseStatusNotFound() throws Exception {
+        when(service.findById(ID)).thenThrow(new TaskNotFoundException(ID));
 
-        mockMvc.perform(get("/api/todo/{id}", ID))
+        mockMvc.perform(get("/api/task/{id}", ID))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void update_TodoEntryWithOnlyTitle_ShouldUpdateTheInformationOfTodoEntry() throws Exception {
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+    public void update_TaskEntryWithOnlyTitle_ShouldUpdateTheInformationOfTaskEntry() throws Exception {
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .build();
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         );
 
-        ArgumentCaptor<TodoDTO> updatedArgument = ArgumentCaptor.forClass(TodoDTO.class);
+        ArgumentCaptor<TaskDTO> updatedArgument = ArgumentCaptor.forClass(TaskDTO.class);
         verify(service, times(1)).update(updatedArgument.capture());
         verifyNoMoreInteractions(service);
 
-        TodoDTO updated = updatedArgument.getValue();
-        assertThatTodoDTO(updated)
+        TaskDTO updated = updatedArgument.getValue();
+        TaskDTOAssert.assertThatTaskDTO(updated)
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasNoDescription();
     }
 
     @Test
-    public void update_TodoEntryWithOnlyTitle_ShouldReturnResponseStatusOk() throws Exception {
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+    public void update_TaskEntryWithOnlyTitle_ShouldReturnResponseStatusOk() throws Exception {
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .build();
 
-        when(service.update(isA(TodoDTO.class))).then(invocationOnMock -> (TodoDTO) invocationOnMock.getArguments()[0]);
+        when(service.update(isA(TaskDTO.class))).then(invocationOnMock -> (TaskDTO) invocationOnMock.getArguments()[0]);
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         )
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void update_TodoEntryWithOnlyTitle_ShouldReturnTheInformationOfUpdatedTodoEntryAsJSon() throws Exception {
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+    public void update_TaskEntryWithOnlyTitle_ShouldReturnTheInformationOfUpdatedTaskEntryAsJSon() throws Exception {
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(TITLE)
                 .build();
 
-        when(service.update(isA(TodoDTO.class))).then(invocationOnMock ->  (TodoDTO) invocationOnMock.getArguments()[0]);
+        when(service.update(isA(TaskDTO.class))).then(invocationOnMock ->  (TaskDTO) invocationOnMock.getArguments()[0]);
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         )
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))
@@ -388,68 +382,68 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void update_TodoEntryWithMaxLengthTitleAndDescription_ShouldUpdateTheInformationOfTodoEntry() throws Exception {
+    public void update_TaskEntryWithMaxLengthTitleAndDescription_ShouldUpdateTheInformationOfTaskEntry() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         );
 
-        ArgumentCaptor<TodoDTO> updatedArgument = ArgumentCaptor.forClass(TodoDTO.class);
+        ArgumentCaptor<TaskDTO> updatedArgument = ArgumentCaptor.forClass(TaskDTO.class);
         verify(service, times(1)).update(updatedArgument.capture());
         verifyNoMoreInteractions(service);
 
-        TodoDTO updated = updatedArgument.getValue();
-        assertThatTodoDTO(updated)
+        TaskDTO updated = updatedArgument.getValue();
+        TaskDTOAssert.assertThatTaskDTO(updated)
                 .hasId(ID)
                 .hasTitle(maxLengthTitle)
                 .hasDescription(maxLengthDescription);
     }
 
     @Test
-    public void update_TodoEntryWithMaxLengthTitleAndDescription_ShouldReturnResponseStatusOk() throws Exception {
+    public void update_TaskEntryWithMaxLengthTitleAndDescription_ShouldReturnResponseStatusOk() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        when(service.create(isA(TodoDTO.class))).then(invocationOnMock -> (TodoDTO) invocationOnMock.getArguments()[0]);
+        when(service.create(isA(TaskDTO.class))).then(invocationOnMock -> (TaskDTO) invocationOnMock.getArguments()[0]);
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         )
                 .andExpect(status().isOk());
     }
 
     @Test
-    public void update_TodoEntryWithMaxLengthTitleAndDescription_ShouldReturnTheInformationOfCreatedUpdatedTodoEntryAsJson() throws Exception {
+    public void update_TaskEntryWithMaxLengthTitleAndDescription_ShouldReturnTheInformationOfCreatedUpdatedTaskEntryAsJson() throws Exception {
         String maxLengthTitle = StringTestUtil.createStringWithLength(MAX_LENGTH_TITLE);
         String maxLengthDescription = StringTestUtil.createStringWithLength(MAX_LENGTH_DESCRIPTION);
 
-        TodoDTO updatedTodoEntry = new TodoDTOBuilder()
+        TaskDTO updatedTaskEntry = new TaskDTOBuilder()
                 .id(ID)
                 .title(maxLengthTitle)
                 .description(maxLengthDescription)
                 .build();
 
-        when(service.update(isA(TodoDTO.class))).then(invocationOnMock -> (TodoDTO) invocationOnMock.getArguments()[0]);
+        when(service.update(isA(TaskDTO.class))).then(invocationOnMock -> (TaskDTO) invocationOnMock.getArguments()[0]);
 
-        mockMvc.perform(put("/api/todo/{id}", ID)
-                        .contentType(APPLICATION_JSON_UTF8)
-                        .content(WebTestUtil.convertObjectToJsonBytes(updatedTodoEntry))
+        mockMvc.perform(put("/api/task/{id}", ID)
+                .contentType(APPLICATION_JSON_UTF8)
+                .content(WebTestUtil.convertObjectToJsonBytes(updatedTaskEntry))
         )
                 .andExpect(content().contentType(APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.id", is(ID)))

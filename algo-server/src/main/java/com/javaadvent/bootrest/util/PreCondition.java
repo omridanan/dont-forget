@@ -6,7 +6,6 @@ package com.javaadvent.bootrest.util;
  *
  * This class selects the thrown exception by using the guideline given in Effective Java by Joshua Bloch (Item 60).
  *
- * @author Petri Kainulainen
  */
 public final class PreCondition {
     /**

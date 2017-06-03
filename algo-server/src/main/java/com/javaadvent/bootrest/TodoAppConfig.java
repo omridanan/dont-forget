@@ -1,6 +1,5 @@
 package com.javaadvent.bootrest;
 
-import com.javaadvent.bootrest.modles.TaskRepositoryImp;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
@@ -49,11 +48,6 @@ public class TodoAppConfig {
     @Bean
     public MongoTemplate mongoTemplate() throws Exception {
         return new MongoTemplate(mongo(), getDatabaseName());
-    }
-
-    @Bean
-    public TaskRepositoryImp taskRepositoryImp(MongoTemplate mongoTemplate){
-        return new TaskRepositoryImp(mongoTemplate);
     }
 
     public static void main(String[] args) {

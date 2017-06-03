@@ -1,13 +1,10 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 
-/**
- * @author Petri Kainulainen
- */
 final class WebTestUtil {
 
     private static final String CHARACTER = "A";

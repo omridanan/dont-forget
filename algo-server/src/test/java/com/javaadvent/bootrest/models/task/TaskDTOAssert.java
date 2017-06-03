@@ -1,23 +1,21 @@
-package com.javaadvent.bootrest.todo;
+package com.javaadvent.bootrest.models.task;
 
 import org.assertj.core.api.AbstractAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * @author Petri Kainulainen
- */
-class TodoAssert extends AbstractAssert<TodoAssert, Todo> {
 
-    private TodoAssert(Todo actual) {
-        super(actual, TodoAssert.class);
+class TaskDTOAssert extends AbstractAssert<TaskDTOAssert, TaskDTO> {
+
+    private TaskDTOAssert(TaskDTO actual) {
+        super(actual, TaskDTOAssert.class);
     }
 
-    static TodoAssert assertThatTodo(Todo actual) {
-        return new TodoAssert(actual);
+    static TaskDTOAssert assertThatTaskDTO(TaskDTO actual) {
+        return new TaskDTOAssert(actual);
     }
 
-    TodoAssert hasDescription(String expectedDescription) {
+    public TaskDTOAssert hasDescription(String expectedDescription) {
         isNotNull();
 
         String actualDescription = actual.getDescription();
@@ -31,7 +29,7 @@ class TodoAssert extends AbstractAssert<TodoAssert, Todo> {
         return this;
     }
 
-    TodoAssert hasId(String expectedId) {
+    public TaskDTOAssert hasId(String expectedId) {
         isNotNull();
 
         String actualId = actual.getId();
@@ -45,18 +43,18 @@ class TodoAssert extends AbstractAssert<TodoAssert, Todo> {
         return this;
     }
 
-    TodoAssert hasNoDescription() {
+    public TaskDTOAssert hasNoDescription() {
         isNotNull();
 
         String actualDescription = actual.getDescription();
         assertThat(actualDescription)
-                .overridingErrorMessage("Expected description to be <null> but was <%s>", actualDescription)
+                .overridingErrorMessage("expected description to be <null> but was <%s>", actualDescription)
                 .isNull();
 
         return this;
     }
 
-    TodoAssert hasNoId() {
+    public TaskDTOAssert hasNoId() {
         isNotNull();
 
         String actualId = actual.getId();
@@ -67,7 +65,7 @@ class TodoAssert extends AbstractAssert<TodoAssert, Todo> {
         return this;
     }
 
-    TodoAssert hasTitle(String expectedTitle) {
+    public TaskDTOAssert hasTitle(String expectedTitle) {
         isNotNull();
 
         String actualTitle = actual.getTitle();
