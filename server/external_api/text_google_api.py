@@ -1,7 +1,7 @@
 # Imports the Google Cloud client library
 from google.cloud import language
 import sys, getopt
-
+ 
 import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/workspace/server/external_api/dont-forget-cd07616e19e2.json"
 
