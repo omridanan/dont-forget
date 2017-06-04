@@ -2,11 +2,14 @@
 from google.cloud import language
 import sys, getopt
 
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "/home/ubuntu/workspace/server/external_api/dont-forget-cd07616e19e2.json"
+
 # Instantiates a client
 language_client = language.Client()
 
 def test(argv):
-	text = ""
+	text = argv[0]
 	
 	try:
 		opts, args = getopt.getopt(argv,"ht:")
