@@ -18,3 +18,4 @@ webargs>=1.6
 redis
 rq
 retinasdk
+pytest

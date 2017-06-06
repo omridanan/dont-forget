@@ -13,7 +13,7 @@ def compare_texts_similarity(text1, text2):
 if __name__ == "__main__":
     print get_keywords("I want to play football")
     
-    print compare_texts_similarity("hello everyone", "goodbye")
+    print compare_texts_similarity("go to play football", "playing football")
     
     
 

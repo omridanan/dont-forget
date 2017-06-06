@@ -6,3 +6,5 @@ dont-forget.iml
 vcs.xml
 .idea/workspace.xml
 .idea/*
+.cache/*
+.cache'
