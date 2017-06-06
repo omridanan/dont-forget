@@ -12,7 +12,7 @@
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Configure the main class of our Spring Boot application -->
-        <start-class>com.javaadvent.bootrest.TodoAppConfig</start-class>
+        <start-class>com.javaadvent.bootrest.TodoApp</start-class>
     </properties>
 
     <!-- Inherit defaults from Spring Boot -->
@@ -23,6 +23,21 @@
     </parent>
 
     <dependencies>
+
+        <!-- Project dependencies-->
+
+        <!-- Google NLP Rest API Dependencies-->
+        <dependency>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-language</artifactId>
+            <version>0.17.2-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>20.0</version>
+        </dependency>
+
         <!-- Get the dependencies of a web application -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -40,12 +55,18 @@
             <artifactId>spring-data-mongodb</artifactId>
         </dependency>
 
+        <!-- Monogo dependencies-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
             <version>3.4.0</version>
         </dependency>
 
+
+
+        <!-- END Project dependencies-->
+
+        <!-- TEST dependencies-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -103,6 +124,8 @@
             <version>0.9.1</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- END Test dependencies-->
     </dependencies>
 
     <build>

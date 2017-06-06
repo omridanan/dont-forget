@@ -7,12 +7,13 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static com.javaadvent.bootrest.models.task.TaskAssert.assertThatTask;
-import static com.javaadvent.bootrest.models.task.TaskDTOAssert.assertThatTaskDTO;
+//import static com.javaadvent.bootrest.models.task.TaskDTOAssert.assertThatTaskDTO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.*;
@@ -20,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MongoDbTaskServiceTest {
-
+/*
     private static final String DESCRIPTION = "description";
     private static final String ID = "id";
     private static final String TITLE = "title";
@@ -216,5 +217,5 @@ public class MongoDbTaskServiceTest {
                 .hasId(ID)
                 .hasTitle(TITLE)
                 .hasDescription(DESCRIPTION);
-    }
+    }*/
 }

@@ -1,8 +1,10 @@
 package com.javaadvent.bootrest.models.task;
 
+import com.google.cloud.language.v1beta2.Entity;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
+import java.util.List;
 
 /**
  * This data transfer object contains the information of a single task
@@ -13,48 +15,45 @@ public final class TaskDTO {
 
     private String id;
 
-    @Size(max = Task.MAX_LENGTH_DESCRIPTION)
-    private String description;
-
     @NotEmpty
-    @Size(max = Task.MAX_LENGTH_TITLE)
-    private String title;
+    @Size(max = Task.MAX_LENGTH_CONTENT)
+    private String content;
 
-    public TaskDTO() {
+    private List<Entity> entities;
 
-    }
+    public TaskDTO() {}
 
     public String getId() {
         return id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public String getTitle() {
-        return title;
+    public String getContent() {
+        return content;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setContent(String content) {
+        this.content = content;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public List<Entity> getEntities() {
+        return entities;
+    }
+
+    public void setEntities(List<Entity> entities) {
+        this.entities = entities;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "TaskDTO[id=%s, description=%s, title=%s]",
+                "TaskDTO[id=%s, content=%s, entities(%s)]",
                 this.id,
-                this.description,
-                this.title
+                this.content,
+                this.entities
         );
     }
 }

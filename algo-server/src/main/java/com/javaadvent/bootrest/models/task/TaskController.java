@@ -1,5 +1,7 @@
 package com.javaadvent.bootrest.models.task;
 
+import com.google.cloud.language.v1beta2.Entity;
+import com.javaadvent.bootrest.services.GoogleNLPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,42 +19,44 @@ import java.util.List;
 @RequestMapping("/api/task")
 final class TaskController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
     private final TaskService service;
+    private final GoogleNLPService googleNLPService;
 
     @Autowired
-    TaskController(TaskService service) {
+    TaskController(TaskService service, GoogleNLPService googleNLPService) {
         this.service = service;
+        this.googleNLPService = googleNLPService;
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     TaskDTO create(@RequestBody @Valid TaskDTO taskEntry) {
-        LOGGER.info("Creating a new task entry with information: {}", taskEntry);
+        logger.info("Creating a new task entry with information: {}", taskEntry);
 
         TaskDTO created = service.create(taskEntry);
-        LOGGER.info("Created a new task entry with information: {}", created);
+        logger.info("Created a new task entry with information: {}", created);
 
         return created;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
     TaskDTO delete(@PathVariable("id") String id) {
-        LOGGER.info("Deleting task entry with id: {}", id);
+        logger.info("Deleting task entry with id: {}", id);
 
         TaskDTO deleted = service.delete(id);
-        LOGGER.info("Deleted task entry with information: {}", deleted);
+        logger.info("Deleted task entry with information: {}", deleted);
 
         return deleted;
     }
 
     @RequestMapping(method = RequestMethod.GET)
     List<TaskDTO> findAll() {
-        LOGGER.info("Finding all task entries");
+        logger.info("Finding all task entries");
 
         List<TaskDTO> taskEntries = service.findAll();
-        LOGGER.info("Found {} task entries", taskEntries.size());
+        logger.info("Found {} task entries", taskEntries.size());
 
         return taskEntries;
     }
@@ -60,8 +64,7 @@ final class TaskController {
     @RequestMapping(value = "/insert1", method = RequestMethod.GET )
     String insert1() {
         TaskDTO t = new TaskDTO();
-        t.setTitle("ASadasd");
-        t.setDescription("desctiprtion");
+        t.setContent("ASadasd");
         TaskDTO created = service.create(t);
         return "insert new task";
     }
@@ -69,20 +72,20 @@ final class TaskController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET)
     TaskDTO findById(@PathVariable("id") String id) {
-        LOGGER.info("Finding task entry with id: {}", id);
+        logger.info("Finding task entry with id: {}", id);
 
         TaskDTO taskEntry = service.findById(id);
-        LOGGER.info("Found task entry with information: {}", taskEntry);
+        logger.info("Found task entry with information: {}", taskEntry);
 
         return taskEntry;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
     TaskDTO update(@RequestBody @Valid TaskDTO taskEntry) {
-        LOGGER.info("Updating task entry with information: {}", taskEntry);
+        logger.info("Updating task entry with information: {}", taskEntry);
 
         TaskDTO updated = service.update(taskEntry);
-        LOGGER.info("Updated task entry with information: {}", updated);
+        logger.info("Updated task entry with information: {}", updated);
 
         return updated;
     }
@@ -90,6 +93,23 @@ final class TaskController {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleTaskNotFound(TaskNotFoundException ex) {
-        LOGGER.error("Handling error with message: {}", ex.getMessage());
+        logger.error("Handling error with message: {}", ex.getMessage());
+    }
+
+    @RequestMapping(value = "user/{user_id}/processTask/{task_id}", method = RequestMethod.GET)
+    String processTask(@PathVariable("user_id") String userId, @PathVariable("task_id") String taskId) {
+        logger.info("Finding task entry with id: {}", taskId);
+
+        TaskDTO taskEntry = service.findById(taskId);
+        logger.info("Found task entry with information: {}", taskEntry);
+
+        List<Entity> taskEntities = googleNLPService.analyzeTextEntities(taskEntry.getContent());
+        taskEntry.setEntities(taskEntities);
+        TaskDTO updated = service.update(taskEntry);
+        logger.info("Updated task entry with new entities: {}", updated);
+
+
+
+        return "OK";
     }
 }

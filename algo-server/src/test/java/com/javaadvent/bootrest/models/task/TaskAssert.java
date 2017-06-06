@@ -14,16 +14,16 @@ class TaskAssert extends AbstractAssert<TaskAssert, Task> {
         return new TaskAssert(actual);
     }
 
-    TaskAssert hasDescription(String expectedDescription) {
+    TaskAssert hasContent(String expectedContent) {
         isNotNull();
 
-        String actualDescription = actual.getDescription();
-        assertThat(actualDescription)
+        String actualContent = actual.getContent();
+        assertThat(actualContent)
                 .overridingErrorMessage("Expected description to be <%s> but was <%s>",
-                        expectedDescription,
-                        actualDescription
+                        expectedContent,
+                        actualContent
                 )
-                .isEqualTo(expectedDescription);
+                .isEqualTo(expectedContent);
 
         return this;
     }
@@ -42,12 +42,12 @@ class TaskAssert extends AbstractAssert<TaskAssert, Task> {
         return this;
     }
 
-    TaskAssert hasNoDescription() {
+    TaskAssert hasNoContent() {
         isNotNull();
 
-        String actualDescription = actual.getDescription();
-        assertThat(actualDescription)
-                .overridingErrorMessage("Expected description to be <null> but was <%s>", actualDescription)
+        String actualContent = actual.getContent();
+        assertThat(actualContent)
+                .overridingErrorMessage("Expected description to be <null> but was <%s>", actualContent)
                 .isNull();
 
         return this;
@@ -60,20 +60,6 @@ class TaskAssert extends AbstractAssert<TaskAssert, Task> {
         assertThat(actualId)
                 .overridingErrorMessage("Expected id to be <null> but was <%s>", actualId)
                 .isNull();
-
-        return this;
-    }
-
-    TaskAssert hasTitle(String expectedTitle) {
-        isNotNull();
-
-        String actualTitle = actual.getTitle();
-        assertThat(actualTitle)
-                .overridingErrorMessage("Expected title to be <%s> but was <%s>",
-                        expectedTitle,
-                        actualTitle
-                )
-                .isEqualTo(expectedTitle);
 
         return this;
     }

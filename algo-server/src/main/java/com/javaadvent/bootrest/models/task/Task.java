@@ -1,7 +1,10 @@
 package com.javaadvent.bootrest.models.task;
 
+import com.google.cloud.language.v1beta2.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.List;
 
 import static com.javaadvent.bootrest.util.PreCondition.*;
 
@@ -11,53 +14,52 @@ import static com.javaadvent.bootrest.util.PreCondition.*;
 @Document(collection = "tasks")
 public final class Task {
 
-    static final int MAX_LENGTH_DESCRIPTION = 500;
-    static final int MAX_LENGTH_TITLE = 100;
+    static final int MAX_LENGTH_CONTENT = 100;
 
     @Id
     private String id;
 
-    private String description;
+    private String content;
 
-    private String title;
+    private List<Entity> entities;
 
     public Task() {}
 
     private Task(Builder builder) {
-        this.description = builder.description;
-        this.title = builder.title;
+        this.content = builder.content;
+        this.entities = builder.entities;
     }
 
     static Builder getBuilder() {
         return new Builder();
     }
 
+    public List<Entity> getEntities() {
+        return entities;
+    }
+
     public String getId() {
         return id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getContent() {
+        return content;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public void update(String content, List<Entity> entities) {
+        checkContent(content);
 
-    public void update(String title, String description) {
-        checkTitleAndDescription(title, description);
-
-        this.title = title;
-        this.description = description;
+        this.content = content;
+        this.entities = entities;
     }
 
     @Override
     public String toString() {
         return String.format(
-                "Task[id=%s, description=%s, title=%s]",
+                "Task[id=%s, content=%s, entities(%s)]",
                 this.id,
-                this.description,
-                this.title
+                this.content,
+                this.entities
         );
     }
 
@@ -67,44 +69,36 @@ public final class Task {
      */
     static class Builder {
 
-        private String description;
-
-        private String title;
+        private String content;
+        private List<Entity> entities;
 
         private Builder() {}
 
-        Builder description(String description) {
-            this.description = description;
+        Builder content(String content) {
+            this.content = content;
             return this;
         }
 
-        Builder title(String title) {
-            this.title = title;
+        Builder entities(List<Entity> entities) {
+            this.entities = entities;
             return this;
         }
 
         Task build() {
             Task build = new Task(this);
 
-            build.checkTitleAndDescription(build.getTitle(), build.getDescription());
+            build.checkContent(build.getContent());
 
             return build;
         }
     }
 
-    private void checkTitleAndDescription(String title, String description) {
-        notNull(title, "Title cannot be null");
-        notEmpty(title, "Title cannot be empty");
-        isTrue(title.length() <= MAX_LENGTH_TITLE,
-                "Title cannot be longer than %d characters",
-                MAX_LENGTH_TITLE
+    private void checkContent(String content) {
+        notNull(content, "content cannot be null");
+        notEmpty(content, "content cannot be empty");
+        isTrue(content.length() <= MAX_LENGTH_CONTENT,
+                "content cannot be longer than %d characters",
+                MAX_LENGTH_CONTENT
         );
-
-        if (description != null) {
-            isTrue(description.length() <= MAX_LENGTH_DESCRIPTION,
-                    "Description cannot be longer than %d characters",
-                    MAX_LENGTH_DESCRIPTION
-            );
-        }
     }
 }

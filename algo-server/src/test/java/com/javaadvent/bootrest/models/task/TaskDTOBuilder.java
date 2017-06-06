@@ -2,7 +2,7 @@ package com.javaadvent.bootrest.models.task;
 
 
 class TaskDTOBuilder {
-
+/*
     private String description;
     private String id;
     private String title;
@@ -34,5 +34,5 @@ class TaskDTOBuilder {
         dto.setTitle(title);
 
         return dto;
-    }
+    }*/
 }

@@ -31,8 +31,7 @@ public final class MongoDBTaskServiceImp implements TaskService {
         LOGGER.info("Creating a new task entry with information: {}", task);
 
         Task persisted = Task.getBuilder()
-                .title(task.getTitle())
-                .description(task.getDescription())
+                .content(task.getContent())
                 .build();
 
         persisted = repository.save(persisted);
@@ -86,7 +85,7 @@ public final class MongoDBTaskServiceImp implements TaskService {
         LOGGER.info("Updating task entry with information: {}", task);
 
         Task updated = findTaskById(task.getId());
-        updated.update(task.getTitle(), task.getDescription());
+        updated.update(task.getContent(), task.getEntities());
         updated = repository.save(updated);
 
         LOGGER.info("Updated task entry with information: {}", updated);
@@ -104,8 +103,8 @@ public final class MongoDBTaskServiceImp implements TaskService {
         TaskDTO dto = new TaskDTO();
 
         dto.setId(model.getId());
-        dto.setTitle(model.getTitle());
-        dto.setDescription(model.getDescription());
+        dto.setContent(model.getContent());
+        dto.setEntities(model.getEntities());
 
         return dto;
     }

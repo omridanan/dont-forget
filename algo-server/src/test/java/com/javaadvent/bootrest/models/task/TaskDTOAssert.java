@@ -5,8 +5,8 @@ import org.assertj.core.api.AbstractAssert;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-class TaskDTOAssert extends AbstractAssert<TaskDTOAssert, TaskDTO> {
-
+class TaskDTOAssert {//extends AbstractAssert<TaskDTOAssert, TaskDTO> {
+/*
     private TaskDTOAssert(TaskDTO actual) {
         super(actual, TaskDTOAssert.class);
     }
@@ -77,5 +77,5 @@ class TaskDTOAssert extends AbstractAssert<TaskDTOAssert, TaskDTO> {
                 .isEqualTo(expectedTitle);
 
         return this;
-    }
+    }*/
 }

@@ -4,15 +4,14 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 class TaskBuilder {
 
-    private String description;
+  /*  private String content;
     private String id;
-    private String title = "NOT_IMPORTANT";
 
     TaskBuilder() {
 
     }
 
-    TaskBuilder description(String description) {
+    TaskBuilder content(String content) {
         this.description = description;
         return this;
     }
@@ -29,12 +28,11 @@ class TaskBuilder {
 
     Task build() {
         Task task = Task.getBuilder()
-                .title(title)
-                .description(description)
+                .content(content)
                 .build();
 
         ReflectionTestUtils.setField(task, "id", id);
 
         return task;
-    }
+    }*/
 }
