@@ -41,6 +41,10 @@ def compare_texts_cortical():
     value = cortical_api.compare_texts_similarity(text1, text2)
     
     return str(value)
+    
+@app.route("/api/CompareSimilarity")
+def compare_similarity():
+    return compare_texts_cortical()
 
 
 if __name__ == '__main__':
