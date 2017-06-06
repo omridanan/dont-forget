@@ -15,9 +15,9 @@ $ cd redis-3.2.9
 $ make
 ```
 
-set PYTHONPATH environment variable to include jobs folder
+set PYTHONPATH environment variable to include more folders
 ```bash
-$ export PYTHONPATH='/home/ubuntu/workspace/server/jobs'
+$ export PYTHONPATH='/home/ubuntu/workspace/server/jobs:/home/ubuntu/workspace/server/external_api'
 ```
 
 Run the redis-server from terminal
