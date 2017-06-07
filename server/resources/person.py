@@ -5,19 +5,19 @@ from db_adapter import db
 from json_utils import json_response
 from webargs import fields
 from webargs.flaskparser import use_args, parser, use_kwargs
+from marshmallow import Schema, fields
+from task import TaskSchema
 
-from task import task_args
-
-person_args = {
-    'facebookId': fields.Str(),
-    'firstName': fields.Str(),
-    'lastName': fields.Str(),
-    'birthday': fields.Str(),
-    'email': fields.Str(),
-    'gender': fields.Str()
-    # 'person_id' : fields.UUID(required=True)
-}
-
+class PersonSchema(Schema):
+    facebookId = fields.Str()
+    firstName = fields.Str()
+    lastName =  fields.Str()
+    birthday = fields.Str()
+    email = fields.Str()
+    gender = fields.Str()
+    
+    class Meta:
+        strict = True
 
 class PersonListResource(Resource):
     # GET - list *all* persons
@@ -27,7 +27,7 @@ class PersonListResource(Resource):
         return json_response(list(db.persons.find(filter)))
 
     # POST - create new person
-    @use_args(person_args)
+    @use_args(PersonSchema())
     def post(self, args):
         result = db.persons.insert_one(args)
         return json_response(db.persons.find({'_id': result.inserted_id})[0])
@@ -43,7 +43,7 @@ class PersonResource(Resource):
         return json_response(result)
 
     # PUT - update person
-    @use_args(person_args)
+    @use_args(PersonSchema())
     def put(self, args, person_id):
         result = db.persons.update_one(
             {'_id': ObjectId(person_id)}, 
@@ -59,10 +59,9 @@ class PersonTasksResource(Resource):
 
         return json_response(result)
 
-    @use_args(task_args)
+    @use_args(TaskSchema())
     def post(self, args, person_id):
         args['personId'] = ObjectId(person_id)
-        args['isSuggested'] = False
         args['isDeleted'] = False
         result = db.tasks.insert_one(args)
         return json_response(db.tasks.find({'_id': result.inserted_id})[0])
