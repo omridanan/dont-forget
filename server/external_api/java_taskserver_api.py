@@ -1,5 +1,6 @@
 import requests
 
+
 SERVER_PORT = 9999
 SERVER_HOST = "127.0.0.1"
 SERVER_BASE_URL = "http://{SERVER_HOST}:{port}"
