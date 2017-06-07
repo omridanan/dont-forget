@@ -43,7 +43,7 @@ class TasksGroupResource(Resource):
         return json_response(result)
 
     # PUT 
-    @use_args(TaskGroupSchema())
+    @use_args(TasksGroupSchema())
     def put(self, args, task_group_id):
         result = db.tasks_group.update_one(
             {'_id': ObjectId(task_group_id)}, 

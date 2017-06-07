@@ -33,13 +33,20 @@ def run():
         
         sum_tasks = {}
         
+        print "TaskGroupId", task_group_id
+        
         for task_id in tasks:
+            
+            print "TaskId", task_id
+            
             task = db.tasks.find_one({'_id': ObjectId(task_id)})
             sum_task = 0
             
             entities_for_task = db.entities.find_one({'_id': ObjectId(task_group_id)})
             
             for entity_id in entities_for_task:
+                
+                print "EntityId", entity_id
                 
                 entity = db.tasks.find_one({'_id': ObjectId(entity_id)})
                 
@@ -53,6 +60,8 @@ def run():
                 
                 sum_tasks[task_id] = sum_task
                 
+                print "SumTask", sum_task
+                
         
         # Get max sum_task by task
         max_task_id = max(sum_tasks)
@@ -62,7 +71,10 @@ def run():
             {'_id': ObjectId(task_group_id)}, 
             { '$set' : { "taskLeaderId" : task_id  }
         )
+        
+        print "MaxTaskId", max_task_id
             
-            
+if __name__ = "__main__":
+    run()
         
     
