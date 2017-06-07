@@ -15,6 +15,7 @@ class PersonSchema(Schema):
     birthday = fields.Str()
     email = fields.Str()
     gender = fields.Str()
+    profiles = fields.List(fields.Str())
     
     class Meta:
         strict = True
