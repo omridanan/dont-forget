@@ -13,13 +13,18 @@ def get_tasks_group_users(profiles):
     result = {}
     
     for profile in profiles:
-        profile_id = profile['_id']
+        
+        profile_id = str(profile['_id'])
         
         result[profile_id] = {}
         
         tasks_groups_ids = profile['taskGroups']
         
+        # pprint(tasks_groups_ids)
+        
         for tasks_group_id in tasks_groups_ids:
+            
+            # pprint(tasks_group_id)
             
             result[profile_id][tasks_group_id] = set() # set of users
             
@@ -29,9 +34,15 @@ def get_tasks_group_users(profiles):
             
             for task_id in tasks_ids:
                 
+                # pprint(task_id)
+                
                 task = db.tasks.find_one({'_id': ObjectId(task_id)})
                 
-                person_id = task['person_id']
+                if not task:
+                    print "not found task:", task_id, tasks_group_id, profile_id
+                    continue
+                
+                person_id = str(task['personId'])
                 
                 result[profile_id][tasks_group_id].add(person_id)
                 
