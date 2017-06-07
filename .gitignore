@@ -6,5 +6,10 @@ dont-forget.iml
 vcs.xml
 .idea/workspace.xml
 .idea/*
+<<<<<<< HEAD
 client/node_modules
 new-client
+=======
+.cache/*
+.cache'
+>>>>>>> 08607616a646f56f5863e8cd10d71bab0d14f4a5

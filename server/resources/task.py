@@ -7,6 +7,7 @@ from webargs.flaskparser import use_args, parser, use_kwargs
 import logging
 import re
 from marshmallow import Schema, fields
+import java_taskserver_api as japi
 
 log = logging.getLogger('werkzeug')
 
@@ -21,7 +22,7 @@ class ReminderSchema(Schema):
 class TaskSchema(Schema):
     title = fields.Str(required=True)
     note = fields.Str(required=True)
-    label = fields.List(fields.Str(), required=True)
+    labels = fields.List(fields.Str(), required=True)
     reminder = fields.Nested(ReminderSchema)
     color = fields.Str(required=True)
     time = fields.Int(required=True)
@@ -29,25 +30,13 @@ class TaskSchema(Schema):
 
     class Meta:
         strict = True
-    
-    
-# task_args = {
-#     "title" : fields.Str(required=True),
-#     "note"  : fields.Str(),
-#     "label" : fields.List(fields.Str()),
-#     "reminder" : fields.Nested({
-#         'date' : fields.Int(),
-#         'repeat' : fields.Str(validate=validate_reminder_repeat_field, required=True), # 1h, 2m, 5d
-#     }, required=True),
-#     "color" : fields.Str(), # RGB
-#     "time" : fields.Int(), # created time
-#     "restore" : fields.Str(), # "note"
-# }
+
 
 task_args = {
     'content': fields.Str(),
     'reminder': fields.Str(required=False)
 }
+
 
 class TaskListResource(Resource):
     # GET all
@@ -58,8 +47,13 @@ class TaskListResource(Resource):
     @use_args(TaskSchema())
     def post(self, args):
         result = db.tasks.insert_one(args)
+        
+        # Call job service handling new task
+        # japi.process_task()
+        log.debug(result)
+        log.debug(args)
+        
         return json_response({"ObjectId" : result.inserted_id})
-
 
 class TaskResource(Resource):
     # GET by id
