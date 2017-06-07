@@ -4,6 +4,7 @@ from flask_restful import Api
 
 from resources.person import PersonResource, PersonListResource, PersonTasksResource
 from resources.task import TaskResource, TaskListResource
+from resources.tasks_group import *
 from flask_cors import CORS
 import cortical_api
 import logging
@@ -19,6 +20,9 @@ api.add_resource(PersonResource, '/persons/<person_id>')
 api.add_resource(PersonTasksResource, '/persons/<person_id>/tasks')
 api.add_resource(TaskListResource, '/tasks')
 api.add_resource(TaskResource, '/tasks/<task_id>')
+api.add_resource(TaskGroupListResource(), '/tasks_group')
+api.add_resource(TaskGroupResource(), '/tasks_group/<task_group_id>')
+
 
 
 @app.route("/")

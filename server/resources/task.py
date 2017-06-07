@@ -18,6 +18,11 @@ def validate_reminder_repeat_field(val):
 class ReminderSchema(Schema):
     date = fields.Int(required=True)
     repeat = fields.Str(validate=validate_reminder_repeat_field, required=True) # 1h, 2m, 5d 
+
+class EntitySchema(Schema):
+    entity_name = fields.Str()
+    entity_type = fields.Str()
+    salience = fields.Float()
     
 class TaskSchema(Schema):
     personId = fields.Str()
@@ -26,6 +31,8 @@ class TaskSchema(Schema):
     time = fields.Int(required=True)
     isSuggested = fields.Str()
     suggestedGroup = fields.Str()
+    taskGroups = fields.List(fields.Str())
+    entities =  fields.Nested(EntitySchema)
 
     class Meta:
         strict = True
