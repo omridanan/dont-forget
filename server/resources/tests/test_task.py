@@ -1,23 +1,30 @@
 import task
 import requests
 import json
-import time first, then int(time.time())
+import time
 
 BASE_URL = "http://localhost:8080/tasks"
 
 def test_post_task():
     url = BASE_URL
+    curr_time = int(time.time())
     post_task = {
     	"color" : "#00BFFF",
     	"labels" : ["play", "football"],
     	"note" : "post task test",
     	"restore" : "",
-    	"time" : 1496769943,
-    	"title": "post task test"
+    	"time" : curr_time,
+    	"title": "post task test" + str(curr_time)
     }
     
+    response = requests.post(url, json=post_task)
     
-
+    assert response.status_code == 200
+    
+    obj_id = json.loads(response.text)
+    
+    assert "ObjectId" in obj_id
+    
 def test_get_task():
     url = BASE_URL + "/5936e5cf1940d14812465d5a"
     response = requests.get(url)
