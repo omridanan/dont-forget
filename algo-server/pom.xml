@@ -49,6 +49,10 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
+        <!-- New Things -->
+
+        <!-- END New Things -->
+
         <!-- Spring Data MongoDB-->
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -131,10 +135,33 @@
     <build>
         <plugins>
             <!-- Spring Boot Maven Support -->
+           <!-- <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>-->
+
+            <!-- New plugin i added -->
+            <!-- Maven Assembly Plugin -->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>spring-boot</classifier>
+                            <mainClass>
+                                com.javaadvent.bootrest.TodoApp
+                            </mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!-- End new plugin i added -->
         </plugins>
     </build>
 </project>

@@ -1,5 +1,6 @@
 package com.javaadvent.bootrest.models.task;
 
+import com.google.cloud.language.v1beta2.Entity;
 import com.google.cloud.language.v1beta2.Sentiment;
 import com.javaadvent.bootrest.services.GoogleNLPService;
 import org.slf4j.Logger;
@@ -43,9 +44,33 @@ public final class GoogleController {
         return googleNLPService.getTextEntities("go playing football");
     }
 
+    @RequestMapping(value = "/test22", method = RequestMethod.GET )
+    String getEntities22() {
+        Sentiment sentiment = googleNLPService.analyzeSentimentText("go playing football");
+
+        return sentiment.toString();
+    }
+
+    @RequestMapping(value = "/test222", method = RequestMethod.GET, produces = "application/json")
+    List<Entity> getEntities222() {
+        return googleNLPService.analyzeTextEntities("go playing football");
+    }
+
     @RequestMapping(value = "/test3", method = RequestMethod.GET )
     List<String> getEntities3() {
         return googleNLPService.getTextEntities("go to play football");
+    }
+
+    @RequestMapping(value = "/test33", method = RequestMethod.GET )
+    String getEntities33() {
+        Sentiment sentiment = googleNLPService.analyzeSentimentText("go to play football");
+
+        return sentiment.toString();
+    }
+
+    @RequestMapping(value = "/test333", method = RequestMethod.GET, produces = "application/json")
+    List<Entity> getEntities333() {
+        return googleNLPService.analyzeTextEntities("go to play football");
     }
 
     @RequestMapping(value = "/test4", method = RequestMethod.GET )
@@ -70,5 +95,16 @@ public final class GoogleController {
         Sentiment sentiment = googleNLPService.analyzeSentimentText("Go to the family doctor for examination");
 
         return sentiment.toString();
+    }
+
+    @RequestMapping(value = "/test8", method = RequestMethod.GET )
+    List<String> getEntities8() {
+        return googleNLPService.getTextEntities("Go to the family doctor for examination");
+    }
+
+
+    @RequestMapping(value = "/test9", method = RequestMethod.GET )
+    List<String> getEntities9() {
+        return googleNLPService.getTextEntities("make an appointment with my best of the family doctor on sunday");
     }
 }
