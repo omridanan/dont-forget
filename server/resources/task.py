@@ -31,21 +31,26 @@ class TaskSchema(Schema):
         strict = True
     
     
+# task_args = {
+#     "title" : fields.Str(required=True),
+#     "note"  : fields.Str(),
+#     "label" : fields.List(fields.Str()),
+#     "reminder" : fields.Nested({
+#         'date' : fields.Int(),
+#         'repeat' : fields.Str(validate=validate_reminder_repeat_field, required=True), # 1h, 2m, 5d
+#     }, required=True),
+#     "color" : fields.Str(), # RGB
+#     "time" : fields.Int(), # created time
+#     "restore" : fields.Str(), # "note"
+# }
+
 task_args = {
-    "title" : fields.Str(required=True),
-    "note"  : fields.Str(),
-    "label" : fields.List(fields.Str()),
-    "reminder" : fields.Nested({
-        'date' : fields.Int(),
-        'repeat' : fields.Str(validate=validate_reminder_repeat_field, required=True), # 1h, 2m, 5d 
-    }, required=True),
-    "color" : fields.Str(), # RGB
-    "time" : fields.Int(), # created time
-    "restore" : fields.Str(), # "note"
+    'content': fields.Str(),
+    'reminder': fields.Str(required=False)
 }
 
 class TaskListResource(Resource):
-	# GET all
+    # GET all
     def get(self):
         return json_response(list(db.tasks.find()))
 
@@ -57,7 +62,7 @@ class TaskListResource(Resource):
 
 
 class TaskResource(Resource):
-	# GET by id
+    # GET by id
     def get(self, task_id):
         result = db.tasks.find_one({'_id': ObjectId(task_id)})
         if not result:
@@ -67,11 +72,15 @@ class TaskResource(Resource):
 
     # PUT 
     #@use_args(task_args, partial=True)
-    @use_args(TaskSchema(partial=True))
+    @use_args(task_args)
     def put(self, args, task_id):
-    	result = db.tasks.update_one(
+        result = db.tasks.update_one(
             {'_id': ObjectId(task_id)}, 
             { '$set' : args }
         )
         
-        return json_response(result.raw_result)
+        return json_response(db.tasks.find({'_id': ObjectId(task_id)})[0])
+
+    def delete(self, task_id):
+        db.tasks.update_one({'_id': ObjectId(task_id)}, {"$set": {'isDeleted': True}})
+        return ''

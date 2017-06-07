@@ -6,3 +6,5 @@ dont-forget.iml
 vcs.xml
 .idea/workspace.xml
 .idea/*
+client/node_modules
+new-client

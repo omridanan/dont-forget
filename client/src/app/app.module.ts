@@ -13,6 +13,7 @@ import {FacebookModule} from "ngx-facebook";
 import {LoginComponent} from "./components/login.component";
 import {RegisterComponent} from "./components/register.component";
 import {UsersService} from "./services/users.service";
+import {NguiDatetimePickerModule} from "@ngui/datetime-picker";
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {UsersService} from "./services/users.service";
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    FacebookModule.forRoot()
+    FacebookModule.forRoot(),
+    NguiDatetimePickerModule
   ],
   providers: [
     AppConfig,
