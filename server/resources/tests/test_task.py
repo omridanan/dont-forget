@@ -9,21 +9,17 @@ def test_post_task():
     url = BASE_URL
     curr_time = int(time.time())
     post_task = {
-    	"color" : "#00BFFF",
-    	"labels" : ["play", "football"],
-    	"note" : "post task test",
-    	"restore" : "",
-    	"time" : curr_time,
-    	"title": "post task test" + str(curr_time)
+        "personId" : "100",
+        "content": "post task test" + str(curr_time),
+    	"time" : curr_time
     }
     
     response = requests.post(url, json=post_task)
     
-    assert response.status_code == 200
-    
     obj_id = json.loads(response.text)
     
     assert "ObjectId" in obj_id
+    assert response.status_code == 200
     
 def test_get_task():
     url = BASE_URL + "/5936e5cf1940d14812465d5a"
@@ -64,7 +60,7 @@ def test_get_all_task():
     
     assert type(t1) == dict
     
-    fields = ["_id", "title", "note", "labels", "color", "time", "restore"]
+    fields = ["_id", "personId", "content", "time"]
     
     for field in fields:
         assert field in t1

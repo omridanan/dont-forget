@@ -20,23 +20,15 @@ class ReminderSchema(Schema):
     repeat = fields.Str(validate=validate_reminder_repeat_field, required=True) # 1h, 2m, 5d 
     
 class TaskSchema(Schema):
-    title = fields.Str(required=True)
-    note = fields.Str(required=True)
-    labels = fields.List(fields.Str(), required=True)
+    personId = fields.Str()
+    content = fields.Str(required=True)
     reminder = fields.Nested(ReminderSchema)
-    color = fields.Str(required=True)
     time = fields.Int(required=True)
-    restore = fields.Str(required=True)
+    isSuggested = fields.Str()
+    suggestedGroup = fields.Str()
 
     class Meta:
         strict = True
-
-
-task_args = {
-    'content': fields.Str(),
-    'reminder': fields.Str(required=False)
-}
-
 
 class TaskListResource(Resource):
     # GET all
@@ -65,8 +57,7 @@ class TaskResource(Resource):
         return json_response(result)
 
     # PUT 
-    #@use_args(task_args, partial=True)
-    @use_args(task_args)
+    @use_args(TaskSchema())
     def put(self, args, task_id):
         result = db.tasks.update_one(
             {'_id': ObjectId(task_id)}, 

@@ -12,7 +12,8 @@ def test_get_labels_google():
     test_text = "play football tomorrow"
     keywords = text_google_api.get_tags_for_text(test_text)
     
-    assert keywords == ['football']
+    assert type(keywords) == dict
+    assert keywords.keys() == ['football']
     
 def test_compare_cortical():
     t1, t2 = "go to play football", "playing football"
