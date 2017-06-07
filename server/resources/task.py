@@ -50,8 +50,8 @@ class TaskListResource(Resource):
         
         # Call job service handling new task
         # japi.process_task()
-        log.debug(result)
-        log.debug(args)
+        log.warn(result)
+        log.warn(args)
         
         return json_response({"ObjectId" : result.inserted_id})
 
