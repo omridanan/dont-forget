@@ -16,6 +16,9 @@
 #            set it as task leader
 
 from db_adapter import db
+from bson import ObjectId
+from text_google_api import get_tags_for_text
+from collections import defaultdict
 
 def get_tasks_group():
     tasks_groups = list(db.tasks_group.find())
@@ -26,55 +29,110 @@ def run():
     
     for tasks_group in tasks_groups:
         
-        tasks = tasks_group['tasks']
-        task_group_id = tasks_groups['_id']
-        entities_count = db.entities_group.find_one({'_id': ObjectId(task_group_id)})['entities_count']
+        tasks_ids = tasks_group['tasks']
+        
+        task_group_id = str(tasks_group['_id'])
+        
+        # entities_group_by_id = db.entities_group.find_one({'taskGroupId': task_group_id})
+        
+        # if not entities_group_by_id:
+        #     print "There is no entities_group_by_id for %s, let's count and add it" % (task_group_id)
+            
+        entities_count = defaultdict(int)
+        
+        for task_id in tasks_ids:
+            # entities -
+            # _id, taskId, entities = [{entity_name, salience}]
+            entities_for_task_row = db.entities.find_one({'taskId': task_id})
+            
+            task = db.tasks.find_one({'_id': ObjectId(task_id)})
+            
+            if not entities_for_task_row:
+                print "There is not entities_for_task for %s, let's get it" % task_id
+                entities_for_task = get_tags_for_text(task['content'])
+                
+                # insert the result to db
+                db.entities.insert_one({
+                    "taskId" : task_id,
+                    "entities" : entities_for_task
+                })
+            else:
+                print "There is already entities for task %s" % task_id
+                entities_for_task = entities_for_task_row['entities']
+                
+            for entity in entities_for_task:
+                entities_count[entity['name']] += 1
+        
+        # delete old row if exists
+        db.entities_group.remove({ "taskGroupId" : task_group_id } );
+        
+        # insert entities_count to db
+        db.entities_group.insert_one({
+            "taskGroupId" : task_group_id,
+            "entitiesCount" : entities_count
+        })
+        
         all_entities_count = float(sum(entities_count.values())) # float needed for divide (3 / 100 = 0.03, not 0)
         
         sum_tasks = {}
         
-        print "TaskGroupId", task_group_id
+        # print "TaskGroupId", task_group_id
         
-        for task_id in tasks:
+        for task_id in tasks_ids:
             
-            print "TaskId", task_id
+            # print "TaskId", task_id
             
-            task = db.tasks.find_one({'_id': ObjectId(task_id)})
             sum_task = 0
             
-            entities_for_task = db.entities.find_one({'_id': ObjectId(task_group_id)})
+            # entities -
+            # _id, taskId, entities = [{entity_name, salience}]
+            entities_for_task_row = db.entities.find_one({'taskId': task_id})
             
-            for entity_id in entities_for_task:
+            if not entities_for_task_row:
+                print "There is not entities_for_task for %s, why??" % task_id
+                return
                 
-                print "EntityId", entity_id
+            else:
+                entities_for_task = entities_for_task_row['entities']
+            
+            print "Entities for task: %s, are: %s" % (task_id, entities_for_task)
+            
+            for entity in entities_for_task:
                 
-                entity = db.tasks.find_one({'_id': ObjectId(entity_id)})
+                # print "Current Entity", str(entity)
                 
-                entity_count = entities_count['entity_id']
+                entity_count = entities_count[entity['name']]
+                
+                # print "Count in group", entities_count
                 
                 entity_percentage = float(entity_count) / all_entities_count
                 
                 entity_val = entity['salience'] * entity_percentage
                 
+                # print "Entity Val", entity_val
+                
                 sum_task += entity_val
                 
+                print "Sum Task for '%s', '%s' is: %f, percentage: %f, val: %f" % (task_id, entity['name'], entity_val, entity_percentage, entity_val)
+                
                 sum_tasks[task_id] = sum_task
-                
-                print "SumTask", sum_task
-                
+            
+            # print "SumTask", sum_tasks
         
         # Get max sum_task by task
         max_task_id = max(sum_tasks)
         
+        print "Max task id by sum_task is: %s with sum_task of: %s" % (max_task_id, sum_tasks[max_task_id])
+        
         # Set as task leader
         db.tasks_group.update_one(
             {'_id': ObjectId(task_group_id)}, 
-            { '$set' : { "taskLeaderId" : task_id  }
+            { '$set' : { "taskLeaderId" : task_id } }
         )
         
-        print "MaxTaskId", max_task_id
+        # print "MaxTaskId", max_task_id
             
-if __name__ = "__main__":
+if __name__ == '__main__':
     run()
         
     
