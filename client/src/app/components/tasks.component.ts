@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {TasksService} from "../services/tasks.service";
 import {Task} from "../models/task.model";
 import {AppContextService} from "../services/app-context.service";
+declare const $;
+declare const Notification;
 
 @Component({
   template: `
@@ -28,8 +30,8 @@ import {AppContextService} from "../services/app-context.service";
             <p>{{task.content}}</p>
           </div>
         </div>
-        <div class="panel-footer label-primary-old">
-          <ul class="note-footer label-primary-old">
+        <div class="panel-footer" [ngClass]="{'label-primary-old': !task.isSuggested, 'label-info': task.isSuggested}">
+          <ul class="note-footer" [ngClass]="{'label-primary-old': !task.isSuggested, 'label-info': task.isSuggested}">
             <li><a data-toggle="modal"
                    data-target="#remind_me_modal"
                    (click)="setRemindMeTask(task)"
@@ -81,6 +83,68 @@ import {AppContextService} from "../services/app-context.service";
         </div>
       </div>
     </div>
+
+    <div class="modal fade" id="intro_suggested_tasks">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title">New suggested tasks</h4>
+          </div>
+          <div class="modal-body">
+            <div>
+              Hi {{appContextService.user.firstName}}
+            </div>
+            <div>
+              Based on your profile, we've found some tasks that might be interest to you.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal" 
+                    (click)="openSuggestedTasksModal()">Let's Start</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal fade" id="new_suggested_task">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title">New suggested task</h4>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="suggestedTasks.length > 0">
+              {{this.suggestedTasks[0]}}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default btn-sm" (click)="passSuggestedTask()">Pass</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="addSuggestedTask()">Add Task</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="done_suggested_tasks">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title">We're done</h4>
+          </div>
+          <div class="modal-body">
+            <div>
+              We're glad we helped you to not forget this time.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
   `
 })
 export class TasksComponent implements OnInit {
@@ -95,11 +159,26 @@ export class TasksComponent implements OnInit {
     content: ''
   };
 
+  suggestedTasks: string[] = [];
+
   constructor(private appContextService: AppContextService, private tasksService: TasksService) {}
 
   ngOnInit(): void {
+    Notification.requestPermission();
     if (this.appContextService.validateAppInitialied()) {
       this.tasksService.getTasks().subscribe(tasks => this.tasks = tasks);
+
+      setTimeout(() => {
+        this.tasksService.getSuggestedTasks().subscribe(suggestedTasks => {
+          this.suggestedTasks = suggestedTasks;
+          if (this.suggestedTasks.length > 0) {
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification("Come check out new suggested tasks!");
+            }
+            this.openSuggestedTasksIntroModal();
+          }
+        });
+      }, 10000);
     }
   }
 
@@ -138,5 +217,33 @@ export class TasksComponent implements OnInit {
   removeReminder(task) {
     task.reminder = '';
     this.tasksService.updateTask(task).subscribe();
+  }
+
+  openSuggestedTasksIntroModal() {
+    $('#intro_suggested_tasks').modal();
+  }
+
+  openSuggestedTasksModal() {
+    $('#new_suggested_task').modal();
+  }
+
+  passSuggestedTask() {
+    $('#new_suggested_task').on('hidden.bs.modal', () => {
+      this.suggestedTasks.splice(0, 1);
+      if (this.suggestedTasks.length > 0) {
+        this.openSuggestedTasksModal();
+      } else {
+        $('#done_suggested_tasks').modal();
+      }
+      $('#new_suggested_task').off('hidden.bs.modal');
+    });
+    $('#new_suggested_task').modal('hide');
+  }
+
+  addSuggestedTask() {
+    this.tasksService.addTask({content: this.suggestedTasks[0], isSuggested: true}).subscribe(task => {
+      this.tasks.push(task);
+    });
+    this.passSuggestedTask();
   }
 }

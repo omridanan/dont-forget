@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
   }
 
   loginWithFacebook(): void {
-    const permissions = 'email,user_birthday';
+    const permissions = 'email,user_birthday,user_relationships';
     this.facebookService.login({scope: permissions})
       .then((response: LoginResponse) => {
         this.appContextService.facebookId = response.authResponse.userID;
@@ -50,7 +50,7 @@ export class LoginComponent implements OnInit {
   }
 
   navigateToRegister(): void {
-    const requestFields = 'email,birthday,first_name,last_name,gender';
+    const requestFields = 'email,birthday,first_name,last_name,gender,relationship_status';
     this.facebookService.api(`/me?fields=${requestFields}`).then(res => {
       const birthday = this.isFullBirthday(res.birthday) ? res.birthday : '';
       this.appContextService.user = <User> {
@@ -59,7 +59,8 @@ export class LoginComponent implements OnInit {
         birthday: birthday,
         firstName: res.first_name,
         lastName: res.last_name,
-        gender: res.gender
+        gender: res.gender.charAt(0).toUpperCase() + res.gender.slice(1),
+        relationshipStatus: res.relationship_status
       };
       this.router.navigateByUrl('/register');
     });
