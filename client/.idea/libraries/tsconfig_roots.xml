@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="tsconfig$roots" type="javaScript">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/MobileApp/node_modules" />
+      <root url="file://$PROJECT_DIR$/MobileApp/node_modules/tns-core-modules" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>
