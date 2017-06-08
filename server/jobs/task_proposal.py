@@ -13,7 +13,8 @@ def get_tasks_group_users(profiles):
     result = {}
     
     for profile in profiles:
-        profile_id = profile['_id']
+        
+        profile_id = str(profile['_id'])
         
         result[profile_id] = {}
         
@@ -31,7 +32,14 @@ def get_tasks_group_users(profiles):
                 
                 task = db.tasks.find_one({'_id': ObjectId(task_id)})
                 
-                person_id = task['person_id']
+                if not task:
+                    print "not found task:", task_id, tasks_group_id, profile_id
+                    continue
+                else:
+                    # print "exists", task_id, tasks_group_id, profile_id
+                    pass
+                
+                person_id = str(task['personId'])
                 
                 result[profile_id][tasks_group_id].add(person_id)
                 
@@ -43,51 +51,46 @@ def run():
     # {'profile_id' : {'task_group_id' : ['user1', '+user2']}}
     users_per_task_group = get_tasks_group_users(profiles)
     
-    return users_per_task_group
-    
     for profile in profiles:
         
-        profile_id = profile['_id']
+        profile_id = str(profile['_id'])
         
-        print "ProfileId", profile_id
+        persons_in_profile = profile['persons']
         
-        persons_in_profile = profile['persons']        
-        
-        tasks_groups_ids = profile['task_groups']
+        tasks_groups_ids = profile['taskGroups']
         
         for tasks_group_id in tasks_groups_ids:
             
-            print "TaskGroupId", task_group_id
-            
-            tasks_group = db.tasks_groups.find_one({'_id': ObjectId(tasks_group_id)})
+            tasks_group = db.tasks_group.find_one({'_id': ObjectId(tasks_group_id)})
             
             tasks_count = len(tasks_group['tasks'])
             
             if tasks_count < MIN_TASKS_IN_GROUP:
-                print "Continue...", tasks_count
+                print "TaskGroup contains less than %s, count: %s. continue..." % (MIN_TASKS_IN_GROUP, tasks_count)
                 continue
             
-            print "PassedMin", tasks_count
+            print "TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count)
             
             # find persons which does not have a task in group
             for person_id in persons_in_profile:
                 
-                print "PersonId", person_id
-                
                 if person_id not in users_per_task_group[profile_id][tasks_group_id]:
                     
-                    task_suggested = db.tasks_suggested.find_one({'person_id': person_id})
+                    task_suggested = db.task_suggested.find_one({'person_id': person_id})
                     
                     # this task didn't be prapre to suggest (not ignored or new)
                     if not task_suggested:
                         
+                        print "Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
+                        
                         # add this task to table
                         db.task_suggested.insert_one({
-                            "task_group_id" : task_group_id,
-                            "person_id" : person_id,
+                            "tasksGroup" : tasks_group_id,
+                            "personId" : person_id,
                             "status" : "new"
                         })
-                        
+                    else:
+                        print "This person has already this task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
                         
 if __name__ == '__main__':
-    pprint(run())
+    run()

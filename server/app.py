@@ -24,7 +24,6 @@ api.add_resource(TaskResource, '/tasks/<task_id>')
 # api.add_resource(TaskGroupResource(), '/tasks_group/<task_group_id>')
 
 
-
 @app.route("/")
 def home():
     return "Don't Forget!"
