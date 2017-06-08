@@ -45,15 +45,19 @@ def get_tags_for_text(text):
 	# Detects the sentiment of the text
 	entities = document.analyze_entities().entities
 	
-	entities_dict = {}
+	entities_list = []
 	
 	for entity in entities:
-		entities_dict[entity.name] = {
-			'type' : entity.entity_type,
-			'salience' : entity.salience
-		}
+		entities_list.append({
+			"name" : entity.name,
+			"salience" : entity.salience
+		})
+		# entities_dict[entity.name] = {
+		# 	'type' : entity.entity_type,
+		# 	'salience' : entity.salience
+		# }
 	
-	return entities_dict
+	return entities_list
 
 	
 def get_full_data(text):
