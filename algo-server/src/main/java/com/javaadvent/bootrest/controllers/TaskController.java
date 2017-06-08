@@ -1,6 +1,9 @@
-package com.javaadvent.bootrest.models.task;
+package com.javaadvent.bootrest.controllers;
 
 import com.google.cloud.language.v1beta2.Entity;
+import com.javaadvent.bootrest.models.task.TaskDTO;
+import com.javaadvent.bootrest.models.task.TaskNotFoundException;
+import com.javaadvent.bootrest.models.task.TaskService;
 import com.javaadvent.bootrest.services.GoogleNLPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +67,11 @@ final class TaskController {
     @RequestMapping(value = "/insert1", method = RequestMethod.GET )
     String insert1() {
         TaskDTO t = new TaskDTO();
-        t.setContent("ASadasd");
+        String taskContent = "Make an appointment with the family doctor";
+        t.setContent(taskContent);
+
+        t.setEntities(googleNLPService.getTextEntities(taskContent));
+
         TaskDTO created = service.create(t);
         return "insert new task";
     }
@@ -96,20 +103,5 @@ final class TaskController {
         logger.error("Handling error with message: {}", ex.getMessage());
     }
 
-    @RequestMapping(value = "user/{user_id}/processTask/{task_id}", method = RequestMethod.GET)
-    String processTask(@PathVariable("user_id") String userId, @PathVariable("task_id") String taskId) {
-        logger.info("Finding task entry with id: {}", taskId);
 
-        TaskDTO taskEntry = service.findById(taskId);
-        logger.info("Found task entry with information: {}", taskEntry);
-
-        List<Entity> taskEntities = googleNLPService.analyzeTextEntities(taskEntry.getContent());
-        taskEntry.setEntities(taskEntities);
-        TaskDTO updated = service.update(taskEntry);
-        logger.info("Updated task entry with new entities: {}", updated);
-
-
-
-        return "OK";
-    }
 }

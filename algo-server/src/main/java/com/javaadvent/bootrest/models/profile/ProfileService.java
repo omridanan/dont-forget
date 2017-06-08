@@ -1,5 +1,6 @@
 package com.javaadvent.bootrest.models.profile;
 
+import com.javaadvent.bootrest.models.profile.Profile;
 import com.javaadvent.bootrest.models.task.TaskDTO;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * This interface declares the methods that provides CRUD operations for task
  */
-interface ProfileService {
+public interface ProfileService {
 
     /**
      * Creates a new task entry.

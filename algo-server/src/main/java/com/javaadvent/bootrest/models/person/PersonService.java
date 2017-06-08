@@ -1,5 +1,6 @@
 package com.javaadvent.bootrest.models.person;
 
+import com.javaadvent.bootrest.models.person.Person;
 import com.javaadvent.bootrest.models.profile.Profile;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * This interface declares the methods that provides CRUD operations for task
  */
-interface PersonService {
+public interface PersonService {
 
     /**
      * Creates a new task entry.

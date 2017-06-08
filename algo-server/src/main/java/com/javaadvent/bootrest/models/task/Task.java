@@ -1,5 +1,6 @@
 package com.javaadvent.bootrest.models.task;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.cloud.language.v1beta2.Entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,7 +22,8 @@ public final class Task {
 
     private String content;
 
-    private List<Entity> entities;
+    @JsonIgnore
+    private List<String> entities;
 
     public Task() {}
 
@@ -34,7 +36,7 @@ public final class Task {
         return new Builder();
     }
 
-    public List<Entity> getEntities() {
+    public List<String> getEntities() {
         return entities;
     }
 
@@ -46,7 +48,7 @@ public final class Task {
         return content;
     }
 
-    public void update(String content, List<Entity> entities) {
+    public void update(String content, List<String> entities) {
         checkContent(content);
 
         this.content = content;
@@ -70,7 +72,7 @@ public final class Task {
     static class Builder {
 
         private String content;
-        private List<Entity> entities;
+        private List<String> entities;
 
         private Builder() {}
 
@@ -79,7 +81,7 @@ public final class Task {
             return this;
         }
 
-        Builder entities(List<Entity> entities) {
+        Builder entities(List<String> entities) {
             this.entities = entities;
             return this;
         }

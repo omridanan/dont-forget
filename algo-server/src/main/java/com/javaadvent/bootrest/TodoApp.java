@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
  *     <li>It launches our application in the main() method.</li>
  * </ol>
  */
+//@ConfigurationProperties(prefix = "jade.connector", locations = "application.properties")
 @Configuration
 @EnableAutoConfiguration
 @ComponentScan

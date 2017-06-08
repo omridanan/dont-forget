@@ -19,7 +19,7 @@ public final class TaskDTO {
     @Size(max = Task.MAX_LENGTH_CONTENT)
     private String content;
 
-    private List<Entity> entities;
+    private List<String> entities;
 
     public TaskDTO() {}
 
@@ -39,11 +39,11 @@ public final class TaskDTO {
         this.content = content;
     }
 
-    public List<Entity> getEntities() {
+    public List<String> getEntities() {
         return entities;
     }
 
-    public void setEntities(List<Entity> entities) {
+    public void setEntities(List<String> entities) {
         this.entities = entities;
     }
 
@@ -53,7 +53,7 @@ public final class TaskDTO {
                 "TaskDTO[id=%s, content=%s, entities(%s)]",
                 this.id,
                 this.content,
-                this.entities
+                this.entities.toString()
         );
     }
 }

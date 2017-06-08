@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * This interface declares the methods that provides CRUD operations for task
  */
-interface TaskService {
+public interface TaskService {
 
     /**
      * Creates a new task entry.

@@ -1,4 +1,4 @@
-package com.javaadvent.bootrest.models.task;
+package com.javaadvent.bootrest.controllers;
 
 import com.google.cloud.language.v1beta2.Entity;
 import com.google.cloud.language.v1beta2.Sentiment;
@@ -6,10 +6,8 @@ import com.javaadvent.bootrest.services.GoogleNLPService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**

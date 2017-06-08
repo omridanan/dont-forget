@@ -1,5 +1,6 @@
 package com.javaadvent.bootrest.models.group;
 
+import com.javaadvent.bootrest.models.group.Group;
 import com.javaadvent.bootrest.models.person.Person;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.List;
 /**
  * This interface declares the methods that provides CRUD operations for task
  */
-interface GroupService {
+public interface GroupService {
 
     /**
      * Creates a new task entry.
