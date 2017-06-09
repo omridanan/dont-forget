@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_restful import Api
 
 from resources.person import PersonResource, PersonListResource, PersonTasksResource, PersonSuggestedTasksResource
@@ -10,7 +10,7 @@ import logging
 
 log = logging.getLogger('werkzeug')
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 api = Api(app)
 CORS(app)
 
@@ -21,10 +21,25 @@ api.add_resource(PersonSuggestedTasksResource, '/persons/<person_id>/suggested_t
 api.add_resource(TaskListResource, '/tasks')
 api.add_resource(TaskResource, '/tasks/<task_id>')
 
-
-@app.route("/")
+@app.route('/')
+def root():
+    return send_from_directory('static', 'index.html')
+    
+@app.route('/login')
+def login():
+    return send_from_directory('static', 'index.html')
+    
+@app.route('/register')
+def register():
+    return send_from_directory('static', 'index.html')
+    
+@app.route('/home')
 def home():
-    return "Don't Forget!"
+    return send_from_directory('static', 'index.html')
+    
+@app.route('/<path:path>')
+def static_path(path):
+    return send_from_directory('static', path)
 
 @app.route("/api/AnalyzeTextGoogle/<text>")
 def get_labels_for_text(text):
