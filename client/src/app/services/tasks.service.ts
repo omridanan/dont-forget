@@ -9,17 +9,23 @@ import {AppConfig} from "../app.config";
 export class TasksService {
   userTasksUrl: string;
   tasksUrl: string;
+  suggestedTasksUrl: string;
 
   constructor(private appConfig: AppConfig,
               private http: Http) { }
 
   initialize(userId) {
     this.userTasksUrl = `${this.appConfig.apiUrl}/persons/${userId}/tasks`;
+    this.suggestedTasksUrl = `${this.appConfig.apiUrl}/persons/${userId}/suggested_tasks`;
     this.tasksUrl = `${this.appConfig.apiUrl}/tasks`;
   }
 
   getTasks() {
     return this.http.get(this.userTasksUrl).map(res => res.json() as Task[]);
+  }
+
+  getSuggestedTasks() {
+    return this.http.get(this.suggestedTasksUrl).map(res => res.json() as string[]);
   }
 
   addTask(task: Task) {

@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -14,13 +14,15 @@ import {LoginComponent} from "./components/login.component";
 import {RegisterComponent} from "./components/register.component";
 import {UsersService} from "./services/users.service";
 import {NguiDatetimePickerModule} from "@ngui/datetime-picker";
+import {FormFieldComponent} from "./components/text-form-field.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     TasksComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    FormFieldComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +30,8 @@ import {NguiDatetimePickerModule} from "@ngui/datetime-picker";
     HttpModule,
     AppRoutingModule,
     FacebookModule.forRoot(),
-    NguiDatetimePickerModule
+    NguiDatetimePickerModule,
+    ReactiveFormsModule,
   ],
   providers: [
     AppConfig,

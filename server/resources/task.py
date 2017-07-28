@@ -7,7 +7,7 @@ from webargs.flaskparser import use_args, parser, use_kwargs
 import logging
 import re
 from marshmallow import Schema, fields
-import java_taskserver_api as japi
+
 
 log = logging.getLogger('werkzeug')
 
@@ -36,6 +36,11 @@ class TaskSchema(Schema):
 
     class Meta:
         strict = True
+
+    'reminder': fields.Str(required=False),
+    'isSuggested': fields.Bool(required=False)
+}
+
 
 class TaskListResource(Resource):
     # GET all
