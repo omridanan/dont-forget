@@ -23,7 +23,7 @@ from collections import defaultdict
 def get_tasks_group():
     tasks_groups = list(db.tasks_group.find())
     return tasks_groups
-    
+# TODO add a check if it the group LastUpdated time is greater than the last run time of this job(when job running should add the run time to db)
 def run():
     tasks_groups = get_tasks_group()
     
@@ -90,6 +90,7 @@ def run():
             
             if not entities_for_task_row:
                 print "There is not entities_for_task for %s, why??" % task_id
+                # TODO don't return
                 return
                 
             else:
@@ -107,11 +108,11 @@ def run():
                 
                 entity_percentage = float(entity_count) / all_entities_count
                 
-                entity_val = entity['salience'] * entity_percentage
+                entity_val = entity['salience'] * entity_percentage # how much the entity is strong in the sentence and how much is strong in the group.
                 
                 # print "Entity Val", entity_val
                 
-                sum_task += entity_val
+                sum_task += entity_val # TODO change to task strong value
                 
                 print "Sum Task for '%s', '%s' is: %f, percentage: %f, val: %f" % (task_id, entity['name'], entity_val, entity_percentage, entity_val)
                 
@@ -120,7 +121,7 @@ def run():
             # print "SumTask", sum_tasks
         
         # Get max sum_task by task
-        max_task_id = max(sum_tasks)
+        max_task_id = max(sum_tasks) #TODO max on the keys change to be on the values
         
         print "Max task id by sum_task is: %s with sum_task of: %s" % (max_task_id, sum_tasks[max_task_id])
         

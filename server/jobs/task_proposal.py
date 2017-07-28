@@ -2,13 +2,14 @@ from db_adapter import db
 from pprint import pprint
 from bson import ObjectId
 
+# TODO check this value if it should be greater. **reminder maybe need to add tasks.
 MIN_TASKS_IN_GROUP = 5
 
 def get_profiles():
     profiles = list(db.profiles.find())
     return profiles
     
-# caching?
+# TODO caching?
 def get_tasks_group_users(profiles):
     result = {}
     
@@ -35,7 +36,7 @@ def get_tasks_group_users(profiles):
                 if not task:
                     print "not found task:", task_id, tasks_group_id, profile_id
                     continue
-                else:
+                else: #TODO remove the else or insert the next rows under the else block
                     # print "exists", task_id, tasks_group_id, profile_id
                     pass
                 
@@ -47,7 +48,8 @@ def get_tasks_group_users(profiles):
     
 def run():
     profiles = get_profiles()
-    
+
+    # TODO change users variable name to persons (also in function name)
     # {'profile_id' : {'task_group_id' : ['user1', '+user2']}}
     users_per_task_group = get_tasks_group_users(profiles)
     
@@ -75,9 +77,11 @@ def run():
             for person_id in persons_in_profile:
                 
                 if person_id not in users_per_task_group[profile_id][tasks_group_id]:
-                    
+
+                    #TODO: note: task suggested contains the task that should be suggets to each person (personId, task_group_Id, status(= new/declined)) need to add condition that status is not declined
                     task_suggested = db.task_suggested.find_one({'person_id': person_id})
-                    
+                    #TODO add a condition that the task_group_id is not exist in task_suggested collection for this user. task_suggested has to support multiple tasks per user
+
                     # this task didn't be prapre to suggest (not ignored or new)
                     if not task_suggested:
                         
