@@ -11,3 +11,4 @@ client/node_modules
 .cache
 *.idea*
 *.pyc
+client/.idea/*
