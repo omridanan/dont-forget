@@ -2,7 +2,8 @@ from db_adapter import db
 from bson import ObjectId
 from cortical_api import liteClient
 import time
-
+# TODO get out of the job folder,
+# TODO add caller for this function: (after add task in resources/task, add new event to a queue with the personId , taskId, reader for the queue, and call this function
 def processTask(person_id, task_id):
     new_task = db.tasks.find_one({'_id': ObjectId(task_id)})
     person = db.persons.find_one({'_id': ObjectId(person_id)})
@@ -21,7 +22,7 @@ def processTask(person_id, task_id):
 
             similarity_percentage = liteClient.compare(new_task["content"], group_task_leader["content"])
 
-            if (similarity_percentage >= 60.0):
+            if (similarity_percentage >= 0.6): #TODO check if the perecentage is 0.6 or 60 add to map if greater than 60 and get the max group Id and connect the task to this group Id
                 # TODO: add to task_group this task
                 new_group_task_list = group['tasks'] + [task_id]
                 db.tasks_group.update({'_id': ObjectId(group_id)}, {'$set': {'tasks': new_group_task_list, 'LastUpdated': int(time.time())}})
