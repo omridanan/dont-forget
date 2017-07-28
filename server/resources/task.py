@@ -37,10 +37,6 @@ class TaskSchema(Schema):
     class Meta:
         strict = True
 
-    'reminder': fields.Str(required=False),
-    'isSuggested': fields.Bool(required=False)
-}
-
 
 class TaskListResource(Resource):
     # GET all

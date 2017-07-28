@@ -7,7 +7,7 @@ from webargs import fields
 from webargs.flaskparser import use_args, parser, use_kwargs
 from marshmallow import Schema, fields
 from datetime import datetime
-from task import TaskSchema
+from .task import TaskSchema
 
 class PersonSchema(Schema):
     facebookId = fields.Str()
@@ -17,7 +17,9 @@ class PersonSchema(Schema):
     email = fields.Str()
     gender = fields.Str()
     profiles = fields.List(fields.Str())
-from task import task_args
+
+    class Meta:
+        strict = True
 
 person_args = {
     'facebookId': fields.Str(),
@@ -40,9 +42,7 @@ person_args = {
     'likeArt': fields.Bool(),
     'likeFinance': fields.Bool(),
     'likePolitics': fields.Bool(),
-    
-    class Meta:
-        strict = True
+}
 
 class PersonListResource(Resource):
     # GET - list *all* persons
