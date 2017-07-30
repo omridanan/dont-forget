@@ -2,6 +2,7 @@ from db_adapter import db
 from bson import ObjectId
 from cortical_api import liteClient
 import time
+
 # TODO get out of the job folder,
 # TODO add caller for this function: (after add task in resources/task, add new event to a queue with the personId , taskId, reader for the queue, and call this function
 def processTask(person_id, task_id):
