@@ -11,7 +11,7 @@ import logging
 
 log = logging.getLogger('werkzeug')
 
-app = Flask(__name__, static_url_path='')
+app = Flask(__name__)
 api = Api(app)
 CORS(app)
 
@@ -27,6 +27,10 @@ api.add_resource(TaskResource, '/tasks/<task_id>')
 @app.route('/')
 def root():
     return send_from_directory('static', 'index.html')
+
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
     
 @app.route('/login')
 def login():
@@ -39,10 +43,6 @@ def register():
 @app.route('/home')
 def home():
     return send_from_directory('static', 'index.html')
-    
-@app.route('/<path:path>')
-def static_path(path):
-    return send_from_directory('static', path)
 
 @app.route("/api/AnalyzeTextGoogle/<text>")
 def get_labels_for_text(text):
