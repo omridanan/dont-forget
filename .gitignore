@@ -12,3 +12,4 @@ client/node_modules
 *.idea*
 *.pyc
 client/.idea/*
+server/static/*
