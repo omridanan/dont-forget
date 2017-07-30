@@ -15,9 +15,9 @@ def validate_reminder_repeat_field(val):
     if not re.match('\d[mhdw]', val):
         raise ValidationError("Date repeat interval field must be like: '5m', '1h', '2d' or '2w' etc.")
 
-class ReminderSchema(Schema):
-    date = fields.Int(required=True)
-    repeat = fields.Str(validate=validate_reminder_repeat_field, required=True) # 1h, 2m, 5d 
+# class ReminderSchema(Schema):
+#     date = fields.Int(required=True)
+#     repeat = fields.Str(validate=validate_reminder_repeat_field, required=True) # 1h, 2m, 5d 
 
 class EntitySchema(Schema):
     entity_name = fields.Str()
@@ -27,9 +27,11 @@ class EntitySchema(Schema):
 class TaskSchema(Schema):
     personId = fields.Str()
     content = fields.Str(required=True)
-    reminder = fields.Nested(ReminderSchema)
-    time = fields.Int(required=True)
-    isSuggested = fields.Str()
+    # reminder = fields.Nested(ReminderSchema)
+    reminder = fields.Str()
+    #time = fields.Int(required=True) # TODO: check if should be required, because the current ui doesn't ask for time when adding new task
+    time = fields.Int() 
+    isSuggested = fields.Boolean()
     suggestedGroup = fields.Str()
     taskGroups = fields.List(fields.Str())
     entities =  fields.Nested(EntitySchema)
@@ -66,7 +68,8 @@ class TaskResource(Resource):
 
     # PUT 
     @use_args(TaskSchema())
-    def put(self, args, task_id):
+    def put(self, args, task_id): 
+        # TODO: fix fatal bug, updating the task, making it to disapear
         result = db.tasks.update_one(
             {'_id': ObjectId(task_id)}, 
             { '$set' : args }

@@ -21,28 +21,26 @@ class PersonSchema(Schema):
     class Meta:
         strict = True
 
-person_args = {
-    'facebookId': fields.Str(),
-    'firstName': fields.Str(),
-    'lastName': fields.Str(),
-    'birthday': fields.Str(),
-    'email': fields.Str(),
-    'gender': fields.Str(),
-    'relationshipStatus': fields.Str(),
-
-    'isSoldier': fields.Bool(),
-    'isStudent': fields.Bool(),
-    'isRentingApartment': fields.Bool(),
-
-    'likeSport': fields.Bool(),
-    'likeTechnology': fields.Bool(),
-    'likeTours': fields.Bool(),
-    'likeCooking': fields.Bool(),
-    'likeMusic': fields.Bool(),
-    'likeArt': fields.Bool(),
-    'likeFinance': fields.Bool(),
-    'likePolitics': fields.Bool(),
-}
+# person_args = {
+#     'facebookId': fields.Str(),
+#     'firstName': fields.Str(),
+#     'lastName': fields.Str(),
+#     'birthday': fields.Str(),
+#     'email': fields.Str(),
+#     'gender': fields.Str(),
+#     'relationshipStatus': fields.Str(),
+#     'isSoldier': fields.Bool(),
+#     'isStudent': fields.Bool(),
+#     'isRentingApartment': fields.Bool(),
+#     'likeSport': fields.Bool(),
+#     'likeTechnology': fields.Bool(),
+#     'likeTours': fields.Bool(),
+#     'likeCooking': fields.Bool(),
+#     'likeMusic': fields.Bool(),
+#     'likeArt': fields.Bool(),
+#     'likeFinance': fields.Bool(),
+#     'likePolitics': fields.Bool(),
+# }
 
 class PersonListResource(Resource):
     # GET - list *all* persons
