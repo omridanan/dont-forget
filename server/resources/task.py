@@ -52,6 +52,7 @@ class TaskListResource(Resource):
         
         # Call job service handling new task
         # japi.process_task()
+        
         log.warn(result)
         log.warn(args)
         

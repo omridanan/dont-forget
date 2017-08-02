@@ -67,6 +67,8 @@ export class LoginComponent implements OnInit {
   }
 
   private isFullBirthday(birthday: string) {
+    if (birthday == undefined) return false;
+    
     return (birthday.match(/\//g) || []).length === 2;
   }
 }
