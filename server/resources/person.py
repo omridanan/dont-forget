@@ -43,7 +43,7 @@ class PersonSchema(Schema):
 # }
 
 class PersonListResource(Resource):
-    # GET - list *all* persons
+    # GET user by facebook id
     def get(self):
         facebook_id = request.args.get('facebookId')
         filter = {'facebookId': facebook_id} if facebook_id else {}
