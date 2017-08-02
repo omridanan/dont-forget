@@ -17,6 +17,19 @@ class PersonSchema(Schema):
     email = fields.Str()
     gender = fields.Str()
     profiles = fields.List(fields.Str())
+    relationshipStatus = fields.Str()
+    isSoldier = fields.Bool()
+    isStudent = fields.Bool()
+    isRentingApartment = fields.Bool()
+    likeSport = fields.Bool()
+    likeTechnology = fields.Bool()
+    likeTours = fields.Bool()
+    likeCooking = fields.Bool()
+    likeMusic = fields.Bool()
+    likeArt = fields.Bool()
+    likeFinance = fields.Bool()
+    likePolitics = fields.Bool()
+
 
     class Meta:
         strict = True
@@ -52,6 +65,19 @@ class PersonListResource(Resource):
     # POST - create new person
     @use_args(PersonSchema())
     def post(self, args):
+        args['profiles'] = []
+        if args['isSoldier']: args['profiles'].append("593882bf734d1d61de882751")
+        if args['isStudent']: args['profiles'].append("59385bbf734d1d61de87fd1d")
+        if args['isRentingApartment']: args['profiles'].append("59388361734d1d61de882889")
+        if args['likeSport']: args['profiles'].append("5981e556734d1d04a1b3603f")
+        if args['likeTechnology']: args['profiles'].append("5981e565734d1d04a1b3604d")
+        if args['likeTours']: args['profiles'].append("5981e577734d1d04a1b36052")
+        if args['likeCooking']: args['profiles'].append("5981e585734d1d04a1b36053")
+        if args['likeMusic']: args['profiles'].append("5981e591734d1d04a1b36057")
+        if args['likeArt']: args['profiles'].append("5981e5a2734d1d04a1b3605f")
+        if args['likeFinance']: args['profiles'].append("5981e5ad734d1d04a1b36066")
+        if args['likePolitics']: args['profiles'].append("5981e5ba734d1d04a1b3606c")
+
         result = db.persons.insert_one(args)
         return json_response(db.persons.find({'_id': result.inserted_id})[0])
 
