@@ -17,7 +17,10 @@ try:
 	#uri = 'mongodb://admin:12345678@ds133261.mlab.com:33261/dont-forget'
 	uri = 'mongodb://admin:admin@ds143071.mlab.com:43071/dont-forget'	
 	client = db_connect_and_validate(uri)
-except:
+except Exception as ex:
+	print("Failed to log to mlab: ", str(ex))
+	raise
+	
 	# if failure, use local instance
 	uri	= 'mongodb://localhost:27017/dont-forget'
 	client = db_connect_and_validate(uri)
