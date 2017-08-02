@@ -6,6 +6,7 @@ from webargs import fields, ValidationError
 from webargs.flaskparser import use_args, parser, use_kwargs
 import logging
 import re
+import job_submit
 from marshmallow import Schema, fields
 
 
@@ -50,9 +51,11 @@ class TaskListResource(Resource):
     def post(self, args):
         result = db.tasks.insert_one(args)
         
-        # Call job service handling new task
-        # japi.process_task()
-        
+        # Call async to the task processor job to handle new task
+        personId = args['personId']
+        newTaskId = result.inserted_id
+        job_submit.insert_new_task_event(personId, newTaskId)
+
         log.warn(result)
         log.warn(args)
         
