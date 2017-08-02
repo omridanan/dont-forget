@@ -25,7 +25,7 @@ def processTask(person_id, task_id):
             profile_group_ids = profile['taskGroups']
 
             # Use this to decide for which task_group' leader the similiarity percentage is maximum and then add this task to this task group.
-            max_similarity_percentage = 0.6; # 0.6 is the minimum value of similarity that a task should have before we want to add it to an existing group. If no task group found, should create a new task group, and add that task to that group. (on creating new task_group should set the first task as leader!
+            max_similarity_percentage = 0.54; # is the minimum value of similarity that a task should have before we want to add it to an existing group. If no task group found, should create a new task group, and add that task to that group. (on creating new task_group should set the first task as leader!
             most_similar_group = None
 
             is_group_found_for_new_task = False
@@ -57,4 +57,4 @@ def processTask(person_id, task_id):
                 db.profiles.update_one({'_id': ObjectId(profile_id)}, {'$set': {'taskGroups': new_task_groups_list}})
 
 if __name__ == '__main__':
-    processTask("5981f5a58ae6893b20843dc4","598210af8ae68902ad050253")
+    processTask("5981f5a58ae6893b20843dc4","5982289e8ae6892308ac1eb0")
