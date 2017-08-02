@@ -1,2 +1,2 @@
 def run():
-    print "Hello from rq"
+    print("Hello from rq")
