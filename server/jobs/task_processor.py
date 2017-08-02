@@ -14,6 +14,10 @@ def processTask(person_id, task_id):
         profile = db.profiles.find_one({'_id': ObjectId(profile_id)})
         profile_group_ids = profile['taskGroups']
 
+        # Use this to decide for which task_group' leader the similiarity percentage is maximum and then add this task to this task group.
+        max_similarity_percentage = 0.6; # 0.6 is the minimum value of similarity that a task should have before we want to add it to an existing group. If no task group found, should create a new task group, and add that task to that group. (on creating new task_group should set the first task as leader!
+        most_similar_group = None
+
         is_group_found_for_new_task = False
         for group_id in profile_group_ids:
             group = db.tasks_group.find_one({'_id': ObjectId(group_id)})
@@ -22,13 +26,19 @@ def processTask(person_id, task_id):
 
             similarity_percentage = liteClient.compare(new_task["content"], group_task_leader["content"])
 
-            if (similarity_percentage >= 0.6): #TODO check if the perecentage is 0.6 or 60 add to map if greater than 60 and get the max group Id and connect the task to this group Id
-                # TODO: add to task_group this task
-                new_group_task_list = group['tasks'] + [task_id]
-                db.tasks_group.update({'_id': ObjectId(group_id)}, {'$set': {'tasks': new_group_task_list, 'LastUpdated': int(time.time())}})
-                is_group_found_for_new_task = True
+            if (similarity_percentage >= max_similarity_percentage):
+                # found the most similar group until now
+                most_similar_group = group
+                # save the similar percentage
+                max_similarity_percentage = similarity_percentage
 
-        if (is_group_found_for_new_task == False):
+        # Check if we found a similar group to the task. If yes - add the task to the task_group.
+        if (most_similar_group != None):
+            # add to task_group this task
+            new_group_task_list = group['tasks'] + [task_id]
+            db.tasks_group.update({'_id': ObjectId(group_id)}, {'$set': {'tasks': new_group_task_list, 'LastUpdated': int(time.time())}})
+        else:
+            # Else - no group similar to the task was found, so thus need to create new task group and add the task to the group and set the task as the task leader
             db.tasks_group.insert_one({'ProfileId': profile_id, 'taskLeaderId': task_id, 'tasks': [task_id], 'LastUpdated': int(time.time())})
 
 
