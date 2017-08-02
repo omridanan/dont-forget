@@ -77,6 +77,12 @@ class PersonListResource(Resource):
         if args['likeArt']: args['profiles'].append("5981e5a2734d1d04a1b3605f")
         if args['likeFinance']: args['profiles'].append("5981e5ad734d1d04a1b36066")
         if args['likePolitics']: args['profiles'].append("5981e5ba734d1d04a1b3606c")
+        if args['gender'] == "Male": args['profiles'].append("5981e4ba734d1d04a1b3600b")
+        if args['gender'] == "Female": args['profiles'].append("59388299734d1d61de882663")
+        if args['relationshipStatus'] == "Married": args['profiles'].append("59388562734d1d61de882a96")
+        if args['relationshipStatus'] == "Single": args['profiles'].append("5981e7d5734d1d04a1b361d0")
+        if args['relationshipStatus'] ==  "In a relationship": args['profiles'].append("5981e801734d1d04a1b36212")
+        if args['relationshipStatus'] == "Engaged": args['profiles'].append("5981e82a734d1d04a1b36222")
 
         result = db.persons.insert_one(args)
         return json_response(db.persons.find({'_id': result.inserted_id})[0])
