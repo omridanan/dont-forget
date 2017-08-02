@@ -69,7 +69,9 @@ class TaskResource(Resource):
 
     # PUT 
     @use_args(TaskSchema())
-    def put(self, args, task_id): 
+    def put(self, args, task_id):
+        print args
+        del args["personId"]
         # TODO: fix fatal bug, updating the task, making it to disapear
         result = db.tasks.update_one(
             {'_id': ObjectId(task_id)}, 
