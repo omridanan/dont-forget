@@ -28,7 +28,6 @@ def processTask(person_id, task_id):
             max_similarity_percentage = 0.54; # is the minimum value of similarity that a task should have before we want to add it to an existing group. If no task group found, should create a new task group, and add that task to that group. (on creating new task_group should set the first task as leader!
             most_similar_group = None
 
-            is_group_found_for_new_task = False
             for group_id in profile_group_ids:
                 group = db.tasks_group.find_one({'_id': ObjectId(group_id)})
                 group_task_leader_id = group['taskLeaderId']
