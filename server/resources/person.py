@@ -119,31 +119,8 @@ class PersonTasksResource(Resource):
 
 class PersonSuggestedTasksResource(Resource):
     def get(self, person_id):
-        suggestion_status = db.user_suggestion_status.find({'personId': ObjectId(person_id)})
-
-        # if suggestion_status.count() == 0:
-        #     db.user_suggestion_status.insert_one({'personId': ObjectId(person_id), 'status': 'Suggested'})
-        #     user = db.persons.find({'_id': ObjectId(person_id)})[0]
-        #     profiles = []
-        #     age = get_age_from_birthdate(user.get('birthday'))
-        #     if 18 <= age <= 27:
-        #         profiles.append('Young18to27')
-        #     if user.get('isSoldier'):
-        #         profiles.append('Soldier')
-        #     if user.get('isStudent'):
-        #         profiles.append('CollegeStudent')
-        #     if user.get('gender') == 'Male':
-        #         profiles.append('Man')
-        #         if user.get('relationshipStatus') == 'Married':
-        #             profiles.append('MarrigedMan')
-        #     else:
-        #         profiles.append('Woman')
-        #         if user.get('relationshipStatus') == 'Married':
-        #             profiles.append('MarrigedWoman')
-        #         if age >= 50:
-        #             profiles.append('Woman50To120')
-        #     if user.get('rentingApartment'):
-        #         profiles.append('RentingAnApartment')
+        # suggestion_status = db.user_suggestion_status.find({'personId': ObjectId(person_id)})
+        suggestion_status = db.task_suggested.find({'personId': ObjectId(person_id)})
 
         #     suggestions = db.task_suggestions_per_profile.find({'profile': {'$in': profiles}})
         #     return json_response(reduce(lambda x, y: x + y, [s['tasks'] for s in suggestions]))
