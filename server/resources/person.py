@@ -17,6 +17,19 @@ class PersonSchema(Schema):
     email = fields.Str()
     gender = fields.Str()
     profiles = fields.List(fields.Str())
+    relationshipStatus = fields.Str()
+    isSoldier = fields.Bool()
+    isStudent = fields.Bool()
+    isRentingApartment = fields.Bool()
+    likeSport = fields.Bool()
+    likeTechnology = fields.Bool()
+    likeTours = fields.Bool()
+    likeCooking = fields.Bool()
+    likeMusic = fields.Bool()
+    likeArt = fields.Bool()
+    likeFinance = fields.Bool()
+    likePolitics = fields.Bool()
+
 
     class Meta:
         strict = True
