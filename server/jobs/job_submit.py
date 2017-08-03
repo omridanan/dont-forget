@@ -5,7 +5,7 @@ import test_rq
 
 q = Queue(connection=Redis())
 
-def run_task_flow_manager(person_id, task_id):
+def insert_new_task_event(person_id, task_id):
     q.enqueue(processTask, person_id, task_id)
     
 def rq_test():
@@ -14,6 +14,6 @@ def rq_test():
 if __name__ == '__main__':
     # run_task_flow_manager(person_id, task_id)
     rq_test()
-    
-   
+
+
 

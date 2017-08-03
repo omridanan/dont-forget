@@ -6,6 +6,7 @@ from webargs import fields, ValidationError
 from webargs.flaskparser import use_args, parser, use_kwargs
 import logging
 import re
+import job_submit
 from marshmallow import Schema, fields
 
 
@@ -30,10 +31,10 @@ class TaskSchema(Schema):
     # reminder = fields.Nested(ReminderSchema)
     reminder = fields.Str()
     #time = fields.Int(required=True) # TODO: check if should be required, because the current ui doesn't ask for time when adding new task
-    time = fields.Int() 
+    time = fields.Int()  # TODO why we need this? I didn't add it to the class diagram
     isSuggested = fields.Boolean()
-    suggestedGroup = fields.Str()
-    taskGroups = fields.List(fields.Str())
+    suggestedGroup = fields.Str() # TODO why we need this? I didn't add it to the class diagram
+    taskGroups = fields.List(fields.Str())  # TODO why we need this? I didn't add it to the class diagram
     entities =  fields.Nested(EntitySchema)
 
     class Meta:
@@ -50,9 +51,11 @@ class TaskListResource(Resource):
     def post(self, args):
         result = db.tasks.insert_one(args)
         
-        # Call job service handling new task
-        # japi.process_task()
-        
+        # Call async to the task processor job to handle new task
+        personId = args['personId']
+        newTaskId = result.inserted_id
+        job_submit.insert_new_task_event(personId, newTaskId)
+
         log.warn(result)
         log.warn(args)
         
