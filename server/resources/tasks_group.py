@@ -12,7 +12,7 @@ import java_taskserver_api as japi
 log = logging.getLogger('werkzeug')
 
 class TasksGroupSchema(Schema):
-    pofileId = fields.Str()
+    profileId = fields.Str() # TODO why do we need this? I didn't insert it to the class diagram
     taskGroupId = fields.Str()
     tasksIds = fields.List(fields.Str())
     taskLeaderId = fields.Str()
