@@ -16,7 +16,7 @@ def processTask(person_id, task_id):
 
         if not 'taskGroups' in profile:
             # create new task group and add the task to the group and set the task as the task leader
-            created_task_group_result = db.tasks_group.insert_one({'ProfileId': profile_id, 'taskLeaderId': task_id, 'tasks': [task_id], 'LastUpdated': int(time.time())})
+            created_task_group_result = db.tasks_group.insert_one({'ProfileId': profile_id, 'taskLeaderId': task_id, 'tasks': [task_id], 'lastUpdated': int(time.time())})
 
             # connect the new task group list in the profile 'taskGroups' list
             new_task_groups_list = [created_task_group_result.inserted_id]
@@ -45,11 +45,11 @@ def processTask(person_id, task_id):
             if (most_similar_group != None):
                 # add to task_group this task
                 new_tasks_list = group['tasks'] + [task_id]
-                db.tasks_group.update_one({'_id': ObjectId(group_id)}, {'$set': {'tasks': new_tasks_list, 'LastUpdated': int(time.time())}})
+                db.tasks_group.update_one({'_id': ObjectId(group_id)}, {'$set': {'tasks': new_tasks_list, 'lastUpdated': int(time.time())}})
             else:
                 # Else - no group similar to the task was found
                 # so thus need create new task group and add the task to the group and set the task as the task leader
-                created_task_group_result = db.tasks_group.insert_one({'ProfileId': profile_id, 'taskLeaderId': task_id, 'tasks': [task_id], 'LastUpdated': int(time.time())})
+                created_task_group_result = db.tasks_group.insert_one({'ProfileId': profile_id, 'taskLeaderId': task_id, 'tasks': [task_id], 'lastUpdated': int(time.time())})
 
                 # connect the new task group list in the profile 'taskGroups' list
                 new_task_groups_list = profile['taskGroups'] + [created_task_group_result.inserted_id]
