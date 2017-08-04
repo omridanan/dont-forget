@@ -30,10 +30,10 @@ class TaskSchema(Schema):
     # reminder = fields.Nested(ReminderSchema)
     reminder = fields.Str()
     #time = fields.Int(required=True) # TODO: check if should be required, because the current ui doesn't ask for time when adding new task
-    time = fields.Int() 
+    time = fields.Int()  # TODO why we need this? I didn't add it to the class diagram
     isSuggested = fields.Boolean()
-    suggestedGroup = fields.Str()
-    taskGroups = fields.List(fields.Str())
+    suggestedGroup = fields.Str() # TODO why we need this? I didn't add it to the class diagram
+    taskGroups = fields.List(fields.Str())  # TODO why we need this? I didn't add it to the class diagram
     entities =  fields.Nested(EntitySchema)
 
     class Meta:
