@@ -19,3 +19,6 @@ def json_response(data, status=200):
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     response.status_code = status
     return response
+
+def to_str(data):
+    return json.dumps(data, cls=JSONEncoder)

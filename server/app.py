@@ -1,15 +1,8 @@
-#!flask/bin/python
 from flask import Flask, request, send_from_directory
 from flask_restful import Api
-
+from flask_cors import CORS
 from resources.person import PersonResource, PersonListResource, PersonTasksResource, PersonSuggestedTasksResource
 from resources.task import TaskResource, TaskListResource
-# from resources.tasks_group import *
-from flask_cors import CORS
-#import cortical_api
-import logging
-
-log = logging.getLogger('werkzeug')
 
 app = Flask(__name__)
 api = Api(app)
@@ -21,8 +14,6 @@ api.add_resource(PersonTasksResource, '/persons/<person_id>/tasks')
 api.add_resource(PersonSuggestedTasksResource, '/persons/<person_id>/suggested_tasks')
 api.add_resource(TaskListResource, '/tasks')
 api.add_resource(TaskResource, '/tasks/<task_id>')
-# api.add_resource(TaskGroupListResource(), '/tasks_group')
-# api.add_resource(TaskGroupResource(), '/tasks_group/<task_group_id>')
 
 @app.route('/')
 def root():
