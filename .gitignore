@@ -13,3 +13,4 @@ client/node_modules
 *.pyc
 client/.idea/*
 server/static/*
+.env

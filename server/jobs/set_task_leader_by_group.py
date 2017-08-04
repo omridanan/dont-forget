@@ -86,7 +86,7 @@ def run():
             
             # entities -
             # _id, taskId, entities = [{entity_name, salience}]
-            entities_for_task_row = db.entities.find_one({'taskId': task_id})
+            entities_for_task_row = db.entities.find_one({'taskId': task_id}) # TODO will not work. entities' table does not contain taskId
             
             if not entities_for_task_row:
                 print "There is not entities_for_task for %s, why??" % task_id
