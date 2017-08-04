@@ -32,7 +32,7 @@ def processTask(person_id, task_id):
             new_task_groups_list = [created_task_group_result.inserted_id]
             db.profiles.update_one({'_id': ObjectId(profile_id)}, {'$set': {'taskGroups': new_task_groups_list}})
 
-            log.warn("%s: [Profile: %s] No taskGroups for profile, added new one with current task" % (source, profile['name']))
+            log.warn("%s: [Profile: %s] No taskGroups for profile, added new one with current task" % (source, profile['ProfileName']))
         else:
             profile_group_ids = profile['taskGroups']
 
@@ -61,7 +61,7 @@ def processTask(person_id, task_id):
                 db.tasks_group.update_one({'_id': ObjectId(group['_id'])}, {'$set': {'tasks': new_tasks_list, 'LastUpdated': int(time.time())}})
 
                 log.warn("%s: [Profile: %s] Found taskGroup similiar (%s) to current task, group_id: %s" % \
-                    (source, profile['name'], max_similarity_percentage, group['_id']))
+                    (source, profile['ProfileName'], max_similarity_percentage, group['_id']))
             else:
                 # Else - no group similar to the task was found
                 # so thus need create new task group and add the task to the group and set the task as the task leader
@@ -71,7 +71,7 @@ def processTask(person_id, task_id):
                 new_task_groups_list = profile['taskGroups'] + [created_task_group_result.inserted_id]
                 db.profiles.update_one({'_id': ObjectId(profile_id)}, {'$set': {'taskGroups': new_task_groups_list}})
 
-                log.warn("%s: [Profile: %s] Add new taskGroup, because no taskGroups was enough similiar" % (source, profile['name']))
+                log.warn("%s: [Profile: %s] Add new taskGroup, because no taskGroups was enough similiar" % (source, profile['ProfileName']))
 
 if __name__ == '__main__':
     processTask("5981f5a58ae6893b20843dc4","5982289e8ae6892308ac1eb0")
