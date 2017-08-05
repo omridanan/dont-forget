@@ -84,8 +84,7 @@ def run():
                         if person_id not in users_per_task_group[profile_id][tasks_group_id]:
 
                             #TODO: note: task suggested contains the task that should be suggets to each person (personId, task_group_Id, status(= new/declined)) need to add condition that status is not declined
-                            task_suggested = db.task_suggested.find_one({'person_id': person_id})
-                            #TODO add a condition that the task_group_id is not exist in task_suggested collection for this user. task_suggested has to support multiple tasks per user
+                            task_suggested = db.task_suggested.find_one({'personId': person_id, 'tasksGroup':tasks_group_id })
 
                             # this task didn't be prapre to suggest (not ignored or new)
                             if not task_suggested:
