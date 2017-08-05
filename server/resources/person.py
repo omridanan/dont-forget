@@ -2,12 +2,16 @@ from bson import ObjectId
 from flask_restful import Resource, abort, reqparse
 from flask import request
 from db_adapter import db
-from json_utils import json_response
+from json_utils import json_response, to_str
 from webargs import fields
 from webargs.flaskparser import use_args, parser, use_kwargs
 from marshmallow import Schema, fields
 from datetime import datetime
 from .task import TaskSchema
+import logging
+import job_submit
+
+log = logging.getLogger('werkzeug')
 
 class PersonSchema(Schema):
     facebookId = fields.Str()
@@ -33,27 +37,6 @@ class PersonSchema(Schema):
 
     class Meta:
         strict = True
-
-# person_args = {
-#     'facebookId': fields.Str(),
-#     'firstName': fields.Str(),
-#     'lastName': fields.Str(),
-#     'birthday': fields.Str(),
-#     'email': fields.Str(),
-#     'gender': fields.Str(),
-#     'relationshipStatus': fields.Str(),
-#     'isSoldier': fields.Bool(),
-#     'isStudent': fields.Bool(),
-#     'isRentingApartment': fields.Bool(),
-#     'likeSport': fields.Bool(),
-#     'likeTechnology': fields.Bool(),
-#     'likeTours': fields.Bool(),
-#     'likeCooking': fields.Bool(),
-#     'likeMusic': fields.Bool(),
-#     'likeArt': fields.Bool(),
-#     'likeFinance': fields.Bool(),
-#     'likePolitics': fields.Bool(),
-# }
 
 class PersonListResource(Resource):
     # GET user by facebook id
@@ -125,40 +108,26 @@ class PersonTasksResource(Resource):
         args['personId'] = ObjectId(person_id)
         args['isSuggested'] = args.get('isSuggested') or False
         args['isDeleted'] = False
+
+        log.warn("PersonTasksResource.post: Insert new task, args: %s" % to_str(args))
         result = db.tasks.insert_one(args)
+        
+        # Call async to the task processor job to handle new task
+        personId = args['personId']
+        newTaskId = result.inserted_id
+        log.warn("PersonTasksResource.post: Trying to add new task event (PersonId- %s, TaskId-%s)" % (personId, newTaskId))
+        
+        job_submit.insert_new_task_event(personId, newTaskId)
+        
+        log.warn("PersonTasksResource.post: Added new task event")
+        
         return json_response(db.tasks.find({'_id': result.inserted_id})[0])
 
 
 class PersonSuggestedTasksResource(Resource):
     def get(self, person_id):
         suggestion_status = db.user_suggestion_status.find({'personId': ObjectId(person_id)})
-
-        # if suggestion_status.count() == 0:
-        #     db.user_suggestion_status.insert_one({'personId': ObjectId(person_id), 'status': 'Suggested'})
-        #     user = db.persons.find({'_id': ObjectId(person_id)})[0]
-        #     profiles = []
-        #     age = get_age_from_birthdate(user.get('birthday'))
-        #     if 18 <= age <= 27:
-        #         profiles.append('Young18to27')
-        #     if user.get('isSoldier'):
-        #         profiles.append('Soldier')
-        #     if user.get('isStudent'):
-        #         profiles.append('CollegeStudent')
-        #     if user.get('gender') == 'Male':
-        #         profiles.append('Man')
-        #         if user.get('relationshipStatus') == 'Married':
-        #             profiles.append('MarrigedMan')
-        #     else:
-        #         profiles.append('Woman')
-        #         if user.get('relationshipStatus') == 'Married':
-        #             profiles.append('MarrigedWoman')
-        #         if age >= 50:
-        #             profiles.append('Woman50To120')
-        #     if user.get('rentingApartment'):
-        #         profiles.append('RentingAnApartment')
-
-        #     suggestions = db.task_suggestions_per_profile.find({'profile': {'$in': profiles}})
-        #     return json_response(reduce(lambda x, y: x + y, [s['tasks'] for s in suggestions]))
+        suggestion_status = db.task_suggested.find({'personId': ObjectId(person_id)})
 
         return json_response([])
 

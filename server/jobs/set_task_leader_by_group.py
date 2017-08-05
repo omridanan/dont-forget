@@ -48,7 +48,7 @@ def run():
             task = db.tasks.find_one({'_id': ObjectId(task_id)})
             
             if not entities_for_task_row:
-                print "There is not entities_for_task for %s, let's get it" % task_id
+                print("There is not entities_for_task for %s, let's get it" % task_id)
                 entities_for_task = get_tags_for_text(task['content'])
                 
                 # insert the result to db
@@ -57,7 +57,7 @@ def run():
                     "entities" : entities_for_task
                 })
             else:
-                print "There is already entities for task %s" % task_id
+                print("There is already entities for task %s" % task_id)
                 entities_for_task = entities_for_task_row['entities']
                 
             for entity in entities_for_task:
@@ -86,17 +86,17 @@ def run():
             
             # entities -
             # _id, taskId, entities = [{entity_name, salience}]
-            entities_for_task_row = db.entities.find_one({'taskId': task_id})
+            entities_for_task_row = db.entities.find_one({'taskId': task_id}) # TODO will not work. entities' table does not contain taskId
             
             if not entities_for_task_row:
-                print "There is not entities_for_task for %s, why??" % task_id
+                print("There is not entities_for_task for %s, why??" % task_id)
                 # TODO don't return
                 return
                 
             else:
                 entities_for_task = entities_for_task_row['entities']
             
-            print "Entities for task: %s, are: %s" % (task_id, entities_for_task)
+            print("Entities for task: %s, are: %s" % (task_id, entities_for_task))
             
             for entity in entities_for_task:
                 
@@ -114,7 +114,7 @@ def run():
                 
                 sum_task += entity_val # TODO change to task strong value
                 
-                print "Sum Task for '%s', '%s' is: %f, percentage: %f, val: %f" % (task_id, entity['name'], entity_val, entity_percentage, entity_val)
+                print("Sum Task for '%s', '%s' is: %f, percentage: %f, val: %f" % (task_id, entity['name'], entity_val, entity_percentage, entity_val))
                 
                 sum_tasks[task_id] = sum_task
             
@@ -123,7 +123,7 @@ def run():
         # Get max sum_task by task
         max_task_id = max(sum_tasks) #TODO max on the keys change to be on the values
         
-        print "Max task id by sum_task is: %s with sum_task of: %s" % (max_task_id, sum_tasks[max_task_id])
+        print("Max task id by sum_task is: %s with sum_task of: %s" % (max_task_id, sum_tasks[max_task_id]))
         
         # Set as task leader
         db.tasks_group.update_one(
