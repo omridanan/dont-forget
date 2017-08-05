@@ -77,7 +77,7 @@ def run():
                         continue
 
                     print "TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count)
-
+                    #TODO filter tasks with under 50% acceptance are not suggested.
                     # find persons which does not have a task in group
                     for person_id in persons_in_profile:
 
