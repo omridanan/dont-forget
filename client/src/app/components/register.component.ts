@@ -24,7 +24,7 @@ import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
           <app-form-field [description]="'Gender'">
             <select class="form-control" formControlName="gender" value="{{user.gender}}"style="width:30em" required>
-              <option>Male</option>
+              <option selected>Male</option>
               <option>Female</option>
             </select>
           </app-form-field>
