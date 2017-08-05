@@ -13,6 +13,9 @@ import job_submit
 
 log = logging.getLogger('werkzeug')
 
+MAX_SUGGESTIONS_PER_REQUEST = 3
+
+
 class PersonSchema(Schema):
     facebookId = fields.Str()
     firstName = fields.Str()
@@ -37,6 +40,11 @@ class PersonSchema(Schema):
 
     class Meta:
         strict = True
+
+
+class SuggestedTaskUpdateSchema(Schema):
+    status = fields.Str()
+
 
 class PersonListResource(Resource):
     # GET user by facebook id
@@ -69,7 +77,7 @@ class PersonListResource(Resource):
 
         result = db.persons.insert_one(args)
 
-        db.profiles.update(
+        db.profiles.update_many(
             {'_id': {'$in': [ObjectId(profile) for profile in args['profiles']]}},
             {'$push': {'persons': result.inserted_id}}
         )
@@ -105,33 +113,66 @@ class PersonTasksResource(Resource):
 
     @use_args(TaskSchema())
     def post(self, args, person_id):
-        args['personId'] = ObjectId(person_id)
-        args['isSuggested'] = args.get('isSuggested') or False
-        args['isDeleted'] = False
-
-        log.warn("PersonTasksResource.post: Insert new task, args: %s" % to_str(args))
-        result = db.tasks.insert_one(args)
-        
-        # Call async to the task processor job to handle new task
-        personId = args['personId']
-        newTaskId = result.inserted_id
-        log.warn("PersonTasksResource.post: Trying to add new task event (PersonId- %s, TaskId-%s)" % (personId, newTaskId))
-        
-        job_submit.insert_new_task_event(personId, newTaskId)
-        
-        log.warn("PersonTasksResource.post: Added new task event")
-        
-        return json_response(db.tasks.find({'_id': result.inserted_id})[0])
+        inserted_task_id = add_new_task(person_id, args['content'])
+        return json_response(db.tasks.find({'_id': inserted_task_id})[0])
 
 
 class PersonSuggestedTasksResource(Resource):
     def get(self, person_id):
-        suggestion_status = db.user_suggestion_status.find({'personId': ObjectId(person_id)})
-        suggestion_status = db.task_suggested.find({'personId': ObjectId(person_id)})
+        new_suggested_tasks = list(db.task_suggested.find({'personId': ObjectId(person_id), 'status': 'new'}).limit(MAX_SUGGESTIONS_PER_REQUEST))
+        for task in new_suggested_tasks:
+            task['content'] = get_suggested_task_content(task)
 
-        return json_response([])
+        return json_response(new_suggested_tasks)
+
+
+class PersonSuggestedTaskResource(Resource):
+    @use_args(SuggestedTaskUpdateSchema)
+    def put(self, args, person_id, suggested_task_id):
+        status = args.get('status')
+        if status not in ['accepted', 'declined']:
+            return abort(400)
+
+        suggested_task_params = {'status': status}
+
+        if status == 'accepted':
+            suggested_task = db.task_suggested.find_one({'_id': ObjectId(suggested_task_id)})
+            task_content = get_suggested_task_content(suggested_task)
+            suggested_task_params['taskId'] = add_new_task(person_id, task_content, True)
+
+        db.task_suggested.update(
+            {'_id': ObjectId(suggested_task_id)},
+            {'$set': suggested_task_params}
+        )
+
+        return json_response(db.task_suggested.find_one({'_id': ObjectId(suggested_task_id)}))
 
 
 def get_age_from_birthdate(birthdate):
     b_date = datetime.strptime(birthdate, '%m/%d/%Y')
     return int(((datetime.today() - b_date).days / 365))
+
+
+def get_suggested_task_content(suggested_task):
+    task_group = db.tasks_group.find_one({'_id': ObjectId(suggested_task['tasksGroup'])})
+    task_leader = db.tasks.find_one({'_id': ObjectId(task_group['taskLeaderId'])})
+    return task_leader['content']
+
+
+def add_new_task(person_id, content, is_suggested=False):
+    log.warn("PersonTasksResource.post: Insert new task, person_id: %s, content: %s, is_suggested: %s", person_id, content, is_suggested)
+    result = db.tasks.insert_one({
+        'personId': ObjectId(person_id),
+        'content': content,
+        'isSuggested': is_suggested,
+        'isDeleted': False
+    })
+
+    # Call async to the task processor job to handle new task
+    new_task_id = result.inserted_id
+    log.warn("PersonTasksResource.post: Trying to add new task event (PersonId- %s, TaskId-%s)" % (person_id, new_task_id))
+
+    job_submit.insert_new_task_event(str(person_id), new_task_id)
+
+    log.warn("PersonTasksResource.post: Added new task event")
+    return new_task_id

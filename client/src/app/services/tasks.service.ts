@@ -32,6 +32,10 @@ export class TasksService {
     return this.http.post(this.userTasksUrl, task).map(res => res.json() as Task);
   }
 
+  updateSuggestedTask(suggestedTaskId, status) {
+    return this.http.put(`${this.suggestedTasksUrl}/${suggestedTaskId}`, {'status': status}).map(res => res.json());
+  }
+
   updateTask(task: Task) {
     return this.http.put(`${this.tasksUrl}/${task._id}`, task).map(res => res.json() as Task);
   }

@@ -1,19 +1,22 @@
 from flask import Flask, request, send_from_directory
 from flask_restful import Api
 from flask_cors import CORS
-from resources.person import PersonResource, PersonListResource, PersonTasksResource, PersonSuggestedTasksResource
+from resources.person import PersonResource, PersonListResource, PersonTasksResource, PersonSuggestedTasksResource, PersonSuggestedTaskResource
 from resources.task import TaskResource, TaskListResource
 
 app = Flask(__name__)
 api = Api(app)
 CORS(app)
 
-api.add_resource(PersonListResource, '/persons')
-api.add_resource(PersonResource, '/persons/<person_id>')
-api.add_resource(PersonTasksResource, '/persons/<person_id>/tasks')
-api.add_resource(PersonSuggestedTasksResource, '/persons/<person_id>/suggested_tasks')
-api.add_resource(TaskListResource, '/tasks')
-api.add_resource(TaskResource, '/tasks/<task_id>')
+API_PREFIX = '/api'
+
+api.add_resource(PersonListResource, '%s/persons' % API_PREFIX)
+api.add_resource(PersonResource, '%s/persons/<person_id>' % API_PREFIX)
+api.add_resource(PersonTasksResource, '%s/persons/<person_id>/tasks' % API_PREFIX)
+api.add_resource(PersonSuggestedTasksResource, '%s/persons/<person_id>/suggested_tasks' % API_PREFIX)
+api.add_resource(PersonSuggestedTaskResource, '%s/persons/<person_id>/suggested_tasks/<suggested_task_id>' % API_PREFIX)
+api.add_resource(TaskListResource, '%s/tasks' % API_PREFIX)
+api.add_resource(TaskResource, '%s/tasks/<task_id>' % API_PREFIX)
 
 @app.route('/')
 def root():
@@ -31,7 +34,7 @@ def login():
 def register():
     return send_from_directory('static', 'index.html')
     
-@app.route('/home')
+@app.route('/tasks')
 def home():
     return send_from_directory('static', 'index.html')
 

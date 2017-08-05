@@ -116,12 +116,12 @@ declare const Notification;
           </div>
           <div class="modal-body">
             <div *ngIf="suggestedTasks.length > 0">
-              {{this.suggestedTasks[0]}}
+              {{this.suggestedTasks[0].content}}
             </div>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default btn-sm" (click)="passSuggestedTask()">Pass</button>
-            <button type="button" class="btn btn-primary btn-sm" (click)="addSuggestedTask()">Add Task</button>
+            <button type="button" class="btn btn-default btn-sm" (click)="declineSuggestedTask()">Pass</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="acceptSuggestedTask()">Add Task</button>
           </div>
         </div>
       </div>
@@ -159,7 +159,7 @@ export class TasksComponent implements OnInit {
     content: ''
   };
 
-  suggestedTasks: string[] = [];
+  suggestedTasks: any[] = [];
 
   constructor(private appContextService: AppContextService, private tasksService: TasksService) {}
 
@@ -178,7 +178,7 @@ export class TasksComponent implements OnInit {
             this.openSuggestedTasksIntroModal();
           }
         });
-      }, 10000);
+      }, 3000);
     }
   }
 
@@ -240,10 +240,20 @@ export class TasksComponent implements OnInit {
     $('#new_suggested_task').modal('hide');
   }
 
-  addSuggestedTask() {
-    this.tasksService.addTask({content: this.suggestedTasks[0], isSuggested: true}).subscribe(task => {
-      this.tasks.push(task);
+  acceptSuggestedTask() {
+    this.tasksService.updateSuggestedTask(this.suggestedTasks[0]._id, 'accepted').subscribe((suggestedTask) => {
+      this.tasks.push({
+        _id: suggestedTask.taskId,
+        content: this.suggestedTasks[0].content,
+        isSuggested: true
+      });
+      this.passSuggestedTask();
     });
-    this.passSuggestedTask();
+  }
+
+  declineSuggestedTask() {
+    this.tasksService.updateSuggestedTask(this.suggestedTasks[0]._id, 'declined').subscribe(() => {
+      this.passSuggestedTask();
+    });
   }
 }
