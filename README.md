@@ -32,8 +32,3 @@ $ rq worker &
 ```
 
 #### Google cloud
-
-Set google-cloude environment variable
-```bash
-$ export GOOGLE_APPLICATION_CREDENTIALS=$PWD/server/external_api/dont-forget-cd07616e19e2.json
-```
