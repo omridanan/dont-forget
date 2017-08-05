@@ -81,10 +81,16 @@ class PersonListResource(Resource):
         if args['gender'] == "Female": args['profiles'].append("59388299734d1d61de882663")
         if args['relationshipStatus'] == "Married": args['profiles'].append("59388562734d1d61de882a96")
         if args['relationshipStatus'] == "Single": args['profiles'].append("5981e7d5734d1d04a1b361d0")
-        if args['relationshipStatus'] ==  "In a relationship": args['profiles'].append("5981e801734d1d04a1b36212")
+        if args['relationshipStatus'] == "In a relationship": args['profiles'].append("5981e801734d1d04a1b36212")
         if args['relationshipStatus'] == "Engaged": args['profiles'].append("5981e82a734d1d04a1b36222")
 
         result = db.persons.insert_one(args)
+
+        db.profiles.update(
+            {'_id': {'$in': [ObjectId(profile) for profile in args['profiles']]}},
+            {'$push': {'persons': result.inserted_id}}
+        )
+
         return json_response(db.persons.find({'_id': result.inserted_id})[0])
 
 
