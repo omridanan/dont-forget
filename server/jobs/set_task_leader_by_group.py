@@ -30,16 +30,22 @@ from text_google_api import get_tags_for_text
 from collections import defaultdict
 
 def get_tasks_group():
-    tasks_groups = list(db.tasks_group.find())
+    last_job_iteration = db.jobs_iterations_statuses.find_one({'jobName': "set_task_leader_per_group" })
+    print "last_job_iteration: "
+    print last_job_iteration
+    print "All tasks groups:"
+    all_tasks_groups =  list(db.tasks_group.find())
+    print all_tasks_groups
+    # check if the group LastUpdated time is greater than the last run time of this job(when job running should add the run time to db)
+    tasks_groups = [tasks_group for tasks_group in all_tasks_groups if tasks_group['LastUpdated'] > last_job_iteration['timestamp']]
+    print "Filtered task_groups: "
+    print tasks_groups
     return tasks_groups
-# TODO add a check if it the group LastUpdated time is greater than the last run time of this job(when job running should add the run time to db)
-
 
 def run():
     iteration_uuid = str(uuid.uuid4()) # for debug to see that one iteration is end before new iteration is starting"
     print "set_task_leader_by_group job starting new iteration (number %s)" %(iteration_uuid)
     tasks_groups = get_tasks_group()
-
     print "This is all the task_groups in the DB:"
 
     print tasks_groups;
@@ -176,6 +182,13 @@ def run():
 
     print "set_task_leader_by_group job iteration number %s has finished." %(iteration_uuid)
 
+    last_job_iteration = db.jobs_iterations_statuses.find_one({'jobName': "set_task_leader_per_group" })
+    db.jobs_iterations_statuses.update_one(
+        {'_id': ObjectId(last_job_iteration['_id'])},
+        { '$set' : { 'iterationUUID' : iteration_uuid, 'timestamp' : int(time.time()), 'status': 'succeed' } }
+    )
+
+    print "updated jobs_iterations_statuses done."
 if __name__ == '__main__':
     run()
         
