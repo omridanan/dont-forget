@@ -37,10 +37,10 @@ def get_tasks_group_users(profiles):
                         task = db.tasks.find_one({'_id': ObjectId(task_id)})
 
                         if not task:
-                            print "not found task:", task_id, tasks_group_id, profile_id
+                            print("not found task:", task_id, tasks_group_id, profile_id)
                             continue
                         else: #TODO remove the else or insert the next rows under the else block
-                            # print "exists", task_id, tasks_group_id, profile_id
+                            # print("exists", task_id, tasks_group_id, profile_id
                             pass
 
                         person_id = str(task['personId'])
@@ -84,15 +84,15 @@ def run():
                     tasks_count = len(tasks_group['tasks'])
 
                     if tasks_count <  MIN_TASKS_IN_GROUP:
-                        print "TaskGroup contains less than %s, count: %s. continue..." % (MIN_TASKS_IN_GROUP, tasks_count)
+                        print("TaskGroup contains less than %s, count: %s. continue..." % (MIN_TASKS_IN_GROUP, tasks_count))
                         continue
 
-                    print "TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count)
+                    print("TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count))
                     #TODO filter tasks with under 50% acceptance are not suggested.
                     # find persons which does not have a task in group
                     for person_id in persons_in_profile:
 
-                        if person_id not in users_per_task_group[profile_id][tasks_group_id]:
+                        if str(person_id) not in users_per_task_group[profile_id][tasks_group_id]:
 
                             #TODO: note: task suggested contains the task that should be suggets to each person (personId, task_group_Id, status(= new/declined)) need to add condition that status is not declined
                             task_suggested = db.task_suggested.find_one({'personId': person_id, 'tasksGroup':tasks_group_id })
@@ -100,10 +100,11 @@ def run():
                             # this task didn't be prapre to suggest (not ignored or new)
                             if not task_suggested:
 
-                                print "Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
+                                print("Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id ))
 
                                 tasks_group_content = get_tasks_group_content(tasks_group)
                                 person_suggested_tasks = db.task_suggested.find({'personId': person_id})
+                                
                                 if all(get_suggested_task_content(existing_suggested_task) != tasks_group_content
                                        for existing_suggested_task in person_suggested_tasks):
                                     # add this task to table
@@ -113,7 +114,7 @@ def run():
                                         "status": "new"
                                     })
                             else:
-                                print "This person has already this task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
+                                print("This person has already this task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id ))
 
 if __name__ == '__main__':
     run()
