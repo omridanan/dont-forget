@@ -1,7 +1,7 @@
 from db_adapter import db
 from bson import ObjectId
 from cortical_api import liteClient
-
+import time
 import logging
 
 log = logging.getLogger('werkzeug')
