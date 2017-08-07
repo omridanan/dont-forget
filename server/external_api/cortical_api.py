@@ -11,7 +11,7 @@ def compare_texts_similarity(text1, text2):
     return liteClient.compare(text1, text2)
     
 if __name__ == "__main__":
-    pass
+    print(compare_texts_similarity("go to the bank today", "go to the bank to retreive money"))
     # print get_keywords("I want to play football")
     # print compare_texts_similarity("go to play football", "playing football")
     
