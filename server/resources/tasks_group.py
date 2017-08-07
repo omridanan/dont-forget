@@ -14,9 +14,9 @@ log = logging.getLogger('werkzeug')
 class TasksGroupSchema(Schema):
     profileId = fields.Str() # TODO why do we need this? I didn't insert it to the class diagram
     taskGroupId = fields.Str()
-    tasksIds = fields.List(fields.Str())
+    tasks = fields.List(fields.Str())
     taskLeaderId = fields.Str()
-    lastUpdated = fields.Int()
+    LastUpdated = fields.Int()
 
     class Meta:
         strict = True
