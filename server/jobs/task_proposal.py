@@ -87,7 +87,7 @@ def run():
                         print("TaskGroup contains less than %s, count: %s. continue..." % (MIN_TASKS_IN_GROUP, tasks_count))
                         continue
 
-                    print("TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count))
+                    # print("TaskGroup contains more than %s, count: %s" % (MIN_TASKS_IN_GROUP, tasks_count))
                     #TODO filter tasks with under 50% acceptance are not suggested.
                     # find persons which does not have a task in group
                     for person_id in persons_in_profile:
@@ -99,14 +99,14 @@ def run():
 
                             # this task didn't be prapre to suggest (not ignored or new)
                             if not task_suggested:
-
-                                print("Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id ))
-
                                 tasks_group_content = get_tasks_group_content(tasks_group)
                                 person_suggested_tasks = db.task_suggested.find({'personId': person_id})
                                 
                                 if all(get_suggested_task_content(existing_suggested_task) != tasks_group_content
                                        for existing_suggested_task in person_suggested_tasks):
+                                    
+                                    print("Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id ))
+                                    
                                     # add this task to table
                                     db.task_suggested.insert_one({
                                         "tasksGroup" : tasks_group_id,
