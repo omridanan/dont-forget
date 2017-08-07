@@ -48,7 +48,18 @@ def get_tasks_group_users(profiles):
                         result[profile_id][tasks_group_id].add(person_id)
 
     return result 
-    
+
+
+def get_tasks_group_content(tasks_group):
+    task_leader = db.tasks.find_one({'_id': ObjectId(tasks_group['taskLeaderId'])})
+    return task_leader['content']
+
+
+def get_suggested_task_content(suggested_task):
+    tasks_group = db.tasks_group.find_one({'_id': ObjectId(suggested_task['tasksGroup'])})
+    return get_tasks_group_content(tasks_group)
+
+
 def run():
     profiles = get_profiles()
 
@@ -91,12 +102,16 @@ def run():
 
                                 print "Add new task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
 
-                                # add this task to table
-                                db.task_suggested.insert_one({
-                                    "tasksGroup" : tasks_group_id,
-                                    "personId" : person_id,
-                                    "status" : "new"
-                                })
+                                tasks_group_content = get_tasks_group_content(tasks_group)
+                                person_suggested_tasks = db.task_suggested.find({'personId': person_id})
+                                if all(get_suggested_task_content(existing_suggested_task) != tasks_group_content
+                                       for existing_suggested_task in person_suggested_tasks):
+                                    # add this task to table
+                                    db.task_suggested.insert_one({
+                                        "tasksGroup" : tasks_group_id,
+                                        "personId" : person_id,
+                                        "status": "new"
+                                    })
                             else:
                                 print "This person has already this task_suggested (task_group_id: %s, person_id: %s)" % ( tasks_group_id, person_id )
 
