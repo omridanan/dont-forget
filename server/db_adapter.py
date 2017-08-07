@@ -25,13 +25,12 @@ while True:
 	except Exception as ex:
 		print("Failed to log to mlab: ", str(ex))
 		time.sleep(1)
+		continue
 		# raise
 		
-		# if failure, use local instance
-		uri	= 'mongodb://localhost:27017/dont-forget'
-		client = db_connect_and_validate(uri)
-	
-
+		# # if failure, use local instance
+		# uri	= 'mongodb://localhost:27017/dont-forget'
+		# client = db_connect_and_validate(uri)
 
 db = client.get_database('dont-forget')
 
