@@ -6,7 +6,7 @@ from pymongo.errors import ConnectionFailure
 import time
 
 def db_connect_and_validate(uri):
-	client = MongoClient(uri, serverSelectionTimeoutMS=1000)
+	client = MongoClient(uri, serverSelectionTimeoutMS=10000)
 
 	# The ismaster command is cheap and does not require auth.
 	# https://api.mongodb.com/python/current/api/pymongo/mongo_client.html
