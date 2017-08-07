@@ -46,7 +46,8 @@ def processTask(person_id, task_id):
                 group_task_leader_id = group['taskLeaderId']
                 group_task_leader = db.tasks.find_one({'_id': ObjectId(group_task_leader_id)})
 
-                similarity_percentage = liteClient.compare(new_task["content"], group_task_leader["content"])
+                similarity_percentage = liteClient.compare(str(new_task["content"]), str(group_task_leader["content"]))
+                log.warn("%s: [Profile: %s] Current group_id: %s, similarity_percentage: %s " % (source, profile['ProfileName'], group_id, similarity_percentage))
 
                 if (similarity_percentage >= max_similarity_percentage):
                     # found the most similar group until now
@@ -57,11 +58,11 @@ def processTask(person_id, task_id):
             # Check if we found a similar group to the task. If yes - add the task to the task_group.
             if (most_similar_group != None):
                 # add to task_group this task
-                new_tasks_list = group['tasks'] + [task_id]
-                db.tasks_group.update_one({'_id': ObjectId(group['_id'])}, {'$set': {'tasks': new_tasks_list, 'LastUpdated': int(time.time())}})
+                new_tasks_list = most_similar_group['tasks'] + [task_id]
+                db.tasks_group.update_one({'_id': ObjectId(most_similar_group['_id'])}, {'$set': {'tasks': new_tasks_list, 'LastUpdated': int(time.time())}})
 
                 log.warn("%s: [Profile: %s] Found taskGroup similiar (%s) to current task, group_id: %s" % \
-                    (source, profile['ProfileName'], max_similarity_percentage, group['_id']))
+                    (source, profile['ProfileName'], max_similarity_percentage, most_similar_group['_id']))
             else:
                 # Else - no group similar to the task was found
                 # so thus need create new task group and add the task to the group and set the task as the task leader
@@ -74,4 +75,4 @@ def processTask(person_id, task_id):
                 log.warn("%s: [Profile: %s] Add new taskGroup, because no taskGroups was enough similiar" % (source, profile['ProfileName']))
 
 if __name__ == '__main__':
-    processTask("5981f5a58ae6893b20843dc4","5982289e8ae6892308ac1eb0")
+    processTask('5988d56e593ebf00acd76613', ObjectId('5988d62f593ebf00acd76616'))
